@@ -1,0 +1,41 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+
+      - name: Upload to server
+        env:
+          SSHPASS: ${{ secrets.SSH_PASS }}
+        run: |
+          sudo apt-get install -y sshpass rsync
+          sshpass -e rsync -az --delete -e "ssh -o StrictHostKeyChecking=no" \
+            dist/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/otto-staging-build/
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASS }}
+          script: |
+            sudo su - otto-staging -c "rm -rf ~/htdocs/staging.otto.my.id/* && cp -r /tmp/otto-staging-build/. ~/htdocs/staging.otto.my.id/"
+            rm -rf /tmp/otto-staging-build
