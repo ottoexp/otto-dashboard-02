@@ -1,6 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { useAuthStore } from '@/stores/auth-store'
 import { AuthenticatedLayout } from '@/components/layout/authenticated-layout'
 
 export const Route = createFileRoute('/_authenticated')({
+  beforeLoad: () => {
+    const { auth } = useAuthStore.getState()
+    if (!auth.accessToken) {
+      throw redirect({
+        to: '/sign-in',
+        search: { redirect: '/' },
+      })
+    }
+  },
   component: AuthenticatedLayout,
 })
