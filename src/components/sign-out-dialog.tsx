@@ -12,9 +12,14 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const location = useLocation()
   const { auth } = useAuthStore()
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      const { logout } = await import('@/lib/api')
+      await logout(auth.refreshToken)
+    } catch {
+      // Continue with local reset even if API call fails
+    }
     auth.reset()
-    // Preserve current location for redirect after sign-in
     const currentPath = location.href
     navigate({
       to: '/sign-in',

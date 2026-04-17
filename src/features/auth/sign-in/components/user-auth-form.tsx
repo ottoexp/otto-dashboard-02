@@ -51,34 +51,31 @@ export function UserAuthForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    toast.promise(sleep(2000), {
-      loading: 'Signing in...',
-      success: () => {
-        setIsLoading(false)
+    try {
+      const { login } = await import('@/lib/api')
+      const response = await login(data)
 
-        // Mock successful authentication with expiry computed at success time
-        const mockUser = {
-          accountNo: 'ACC001',
-          email: data.email,
-          role: ['user'],
-          exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
-        }
+      auth.setUser({
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        role: response.user.role,
+      })
+      auth.setAccessToken(response.accessToken)
+      auth.setRefreshToken(response.refreshToken)
 
-        // Set user and access token
-        auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
+      const targetPath = redirectTo || '/'
+      navigate({ to: targetPath, replace: true })
 
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
-
-        return `Welcome back, ${data.email}!`
-      },
-      error: 'Error',
-    })
+      toast.success(`Welcome back, ${data.email}!`)
+    } catch (error) {
+      toast.error('Invalid email or password')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/stores/auth-store'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -38,6 +41,8 @@ export function SignUpForm({
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { auth } = useAuthStore()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,14 +53,33 @@ export function SignUpForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
 
-    setTimeout(() => {
+    try {
+      const { register } = await import('@/lib/api')
+      const response = await register({
+        email: data.email,
+        password: data.password,
+        name: data.email.split('@')[0],
+      })
+
+      auth.setUser({
+        id: response.user.id,
+        email: response.user.email,
+        name: response.user.name,
+        role: response.user.role,
+      })
+      auth.setAccessToken(response.accessToken)
+      auth.setRefreshToken(response.refreshToken)
+
+      navigate({ to: '/', replace: true })
+      toast.success('Account created successfully!')
+    } catch {
+      toast.error('Registration failed. Email may already be in use.')
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (

@@ -1,13 +1,14 @@
 import { create } from 'zustand'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
-const ACCESS_TOKEN = 'thisisjustarandomstring'
+const ACCESS_TOKEN = 'otto_access_token'
+const REFRESH_TOKEN = 'otto_refresh_token'
 
 interface AuthUser {
-  accountNo: string
+  id: string
   email: string
-  role: string[]
-  exp: number
+  name: string
+  role: string
 }
 
 interface AuthState {
@@ -16,7 +17,8 @@ interface AuthState {
     setUser: (user: AuthUser | null) => void
     accessToken: string
     setAccessToken: (accessToken: string) => void
-    resetAccessToken: () => void
+    refreshToken: string
+    setRefreshToken: (refreshToken: string) => void
     reset: () => void
   }
 }
@@ -24,6 +26,8 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()((set) => {
   const cookieState = getCookie(ACCESS_TOKEN)
   const initToken = cookieState ? JSON.parse(cookieState) : ''
+  const refreshCookieState = getCookie(REFRESH_TOKEN)
+  const initRefreshToken = refreshCookieState ? JSON.parse(refreshCookieState) : ''
   return {
     auth: {
       user: null,
@@ -35,17 +39,19 @@ export const useAuthStore = create<AuthState>()((set) => {
           setCookie(ACCESS_TOKEN, JSON.stringify(accessToken))
           return { ...state, auth: { ...state.auth, accessToken } }
         }),
-      resetAccessToken: () =>
+      refreshToken: initRefreshToken,
+      setRefreshToken: (refreshToken) =>
         set((state) => {
-          removeCookie(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
+          setCookie(REFRESH_TOKEN, JSON.stringify(refreshToken))
+          return { ...state, auth: { ...state.auth, refreshToken } }
         }),
       reset: () =>
         set((state) => {
           removeCookie(ACCESS_TOKEN)
+          removeCookie(REFRESH_TOKEN)
           return {
             ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
+            auth: { ...state.auth, user: null, accessToken: '', refreshToken: '' },
           }
         }),
     },
