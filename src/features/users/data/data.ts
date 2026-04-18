@@ -33,3 +33,10 @@ export const roles = [
     icon: CreditCard,
   },
 ] as const
+
+export const userStatuses = [
+  { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' },
+  { label: 'Invited', value: 'invited' },
+  { label: 'Suspended', value: 'suspended' },
+] as const

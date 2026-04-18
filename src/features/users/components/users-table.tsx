@@ -23,27 +23,23 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { roles } from '../data/data'
-import { type User } from '../data/schema'
+import { useUsersQuery } from '../data/users-query'
 import { DataTableBulkActions } from './data-table-bulk-actions'
 import { usersColumns as columns } from './users-columns'
+import { Loader2 } from 'lucide-react'
 
 type DataTableProps = {
-  data: User[]
   search: Record<string, unknown>
   navigate: NavigateFn
 }
 
-export function UsersTable({ data, search, navigate }: DataTableProps) {
+export function UsersTable({ search, navigate }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
 
-  // Local state management for table (uncomment to use local-only state, not synced with URL)
-  // const [columnFilters, onColumnFiltersChange] = useState<ColumnFiltersState>([])
-  // const [pagination, onPaginationChange] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
-
-  // Synced with URL states (keys/defaults mirror users route search schema)
+  // Synced with URL states
   const {
     columnFilters,
     onColumnFiltersChange,
@@ -56,17 +52,28 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: false },
     columnFilters: [
-      // username per-column text filter
       { columnId: 'username', searchKey: 'username', type: 'string' },
       { columnId: 'status', searchKey: 'status', type: 'array' },
       { columnId: 'role', searchKey: 'role', type: 'array' },
     ],
   })
 
-  // eslint-disable-next-line react-hooks/incompatible-library
+  // Fetch data from API
+  const { data, isLoading, error } = useUsersQuery({
+    page: pagination.pageIndex + 1, // API is 1-indexed
+    pageSize: pagination.pageSize,
+    status: columnFilters.find((f) => f.id === 'status')?.value as string[] | undefined,
+    role: columnFilters.find((f) => f.id === 'role')?.value as string[] | undefined,
+    username: columnFilters.find((f) => f.id === 'username')?.value as string | undefined,
+  })
+
+  const tableData = data?.data ?? []
+  const pageCount = data?.pagination.totalPages ?? 0
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
+    pageCount,
     state: {
       sorting,
       pagination,
@@ -75,6 +82,8 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
       columnVisibility,
     },
     enableRowSelection: true,
+    manualPagination: true, // Server-side pagination
+    manualFiltering: true, // Server-side filtering
     onPaginationChange,
     onColumnFiltersChange,
     onRowSelectionChange: setRowSelection,
@@ -92,10 +101,28 @@ export function UsersTable({ data, search, navigate }: DataTableProps) {
     ensurePageInRange(table.getPageCount())
   }, [table, ensurePageInRange])
 
+  if (isLoading) {
+    return (
+      <div className='flex h-64 items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className='flex h-64 items-center justify-center'>
+        <p className='text-destructive'>
+          Error loading users: {error.message}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div
       className={cn(
-        'max-sm:has-[div[role="toolbar"]]:mb-16', // Add margin bottom to the table on mobile when the toolbar is visible
+        'max-sm:has-[div[role="toolbar"]]:mb-16',
         'flex flex-1 flex-col gap-4'
       )}
     >

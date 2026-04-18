@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { showSubmittedData } from '@/lib/show-submitted-data'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,20 +23,21 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { roles } from '../data/data'
+import { toast } from 'sonner'
+import { roles, userStatuses } from '../data/data'
 import { type User } from '../data/schema'
+import { useCreateUserMutation, useUpdateUserMutation } from '../data/users-query'
 
 const formSchema = z
   .object({
     firstName: z.string().min(1, 'First Name is required.'),
     lastName: z.string().min(1, 'Last Name is required.'),
-    username: z.string().min(1, 'Username is required.'),
+    username: z.string().min(3, 'Username must be at least 3 characters.'),
     phoneNumber: z.string().min(1, 'Phone number is required.'),
-    email: z.email({
-      error: (iss) => (iss.input === '' ? 'Email is required.' : undefined),
-    }),
+    email: z.string().email('Invalid email address.'),
     password: z.string().transform((pwd) => pwd.trim()),
     role: z.string().min(1, 'Role is required.'),
+    status: z.string().min(1, 'Status is required.'),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
   })
@@ -54,30 +54,10 @@ const formSchema = z
   .refine(
     ({ isEdit, password }) => {
       if (isEdit && !password) return true
-      return password.length >= 8
+      return password.length >= 6
     },
     {
-      message: 'Password must be at least 8 characters long.',
-      path: ['password'],
-    }
-  )
-  .refine(
-    ({ isEdit, password }) => {
-      if (isEdit && !password) return true
-      return /[a-z]/.test(password)
-    },
-    {
-      message: 'Password must contain at least one lowercase letter.',
-      path: ['password'],
-    }
-  )
-  .refine(
-    ({ isEdit, password }) => {
-      if (isEdit && !password) return true
-      return /\d/.test(password)
-    },
-    {
-      message: 'Password must contain at least one number.',
+      message: 'Password must be at least 6 characters long.',
       path: ['password'],
     }
   )
@@ -91,6 +71,7 @@ const formSchema = z
       path: ['confirmPassword'],
     }
   )
+
 type UserForm = z.infer<typeof formSchema>
 
 type UserActionDialogProps = {
@@ -105,11 +86,20 @@ export function UsersActionDialog({
   onOpenChange,
 }: UserActionDialogProps) {
   const isEdit = !!currentRow
+  const createUser = useCreateUserMutation()
+  const updateUser = useUpdateUserMutation()
+
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
     defaultValues: isEdit
       ? {
-          ...currentRow,
+          firstName: currentRow.firstName,
+          lastName: currentRow.lastName,
+          username: currentRow.username,
+          email: currentRow.email,
+          phoneNumber: currentRow.phoneNumber || '',
+          role: currentRow.role,
+          status: currentRow.status,
           password: '',
           confirmPassword: '',
           isEdit,
@@ -120,6 +110,7 @@ export function UsersActionDialog({
           username: '',
           email: '',
           role: '',
+          status: 'active',
           phoneNumber: '',
           password: '',
           confirmPassword: '',
@@ -127,13 +118,61 @@ export function UsersActionDialog({
         },
   })
 
-  const onSubmit = (values: UserForm) => {
-    form.reset()
-    showSubmittedData(values)
-    onOpenChange(false)
+  const onSubmit = async (values: UserForm) => {
+    try {
+      if (isEdit && currentRow) {
+        // Update existing user
+        const updatePayload: {
+          firstName: string
+          lastName: string
+          username: string
+          email: string
+          phoneNumber: string
+          role: 'superadmin' | 'admin' | 'cashier' | 'manager'
+          status: 'active' | 'inactive' | 'invited' | 'suspended'
+          password?: string
+        } = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          username: values.username,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          role: values.role as 'superadmin' | 'admin' | 'cashier' | 'manager',
+          status: values.status as 'active' | 'inactive' | 'invited' | 'suspended',
+        }
+        
+        // Only include password if it's provided
+        if (values.password) {
+          updatePayload.password = values.password
+        }
+
+        await updateUser.mutateAsync({ id: currentRow.id, payload: updatePayload })
+        toast.success('User updated successfully')
+      } else {
+        // Create new user
+        await createUser.mutateAsync({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          username: values.username,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          password: values.password,
+          role: values.role as 'superadmin' | 'admin' | 'cashier' | 'manager',
+          status: values.status as 'active' | 'inactive' | 'invited' | 'suspended',
+        })
+        toast.success('User created successfully')
+      }
+      
+      form.reset()
+      onOpenChange(false)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      toast.error(errorMessage)
+    }
   }
 
   const isPasswordTouched = !!form.formState.dirtyFields.password
+  const isPending = createUser.isPending || updateUser.isPending
 
   return (
     <Dialog
@@ -244,7 +283,7 @@ export function UsersActionDialog({
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder='+123456789'
+                        placeholder='+628123456789'
                         className='col-span-4'
                         {...field}
                       />
@@ -275,11 +314,31 @@ export function UsersActionDialog({
               />
               <FormField
                 control={form.control}
+                name='status'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end'>Status</FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder='Select a status'
+                      className='col-span-4'
+                      items={userStatuses.map(({ label, value }) => ({
+                        label,
+                        value,
+                      }))}
+                    />
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name='password'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
                     <FormLabel className='col-span-2 text-end'>
-                      Password
+                      {isEdit ? 'New Password (optional)' : 'Password'}
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
@@ -316,8 +375,8 @@ export function UsersActionDialog({
           </Form>
         </div>
         <DialogFooter>
-          <Button type='submit' form='user-form'>
-            Save changes
+          <Button type='submit' form='user-form' disabled={isPending}>
+            {isPending ? (isEdit ? 'Updating...' : 'Creating...') : 'Save changes'}
           </Button>
         </DialogFooter>
       </DialogContent>

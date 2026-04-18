@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { showSubmittedData } from '@/lib/show-submitted-data'
+import { toast } from 'sonner'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { type User } from '../data/schema'
+import { useDeleteUserMutation } from '../data/users-query'
 
 type UserDeleteDialogProps = {
   open: boolean
@@ -21,12 +22,20 @@ export function UsersDeleteDialog({
   currentRow,
 }: UserDeleteDialogProps) {
   const [value, setValue] = useState('')
+  const deleteUser = useDeleteUserMutation()
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (value.trim() !== currentRow.username) return
 
-    onOpenChange(false)
-    showSubmittedData(currentRow, 'The following user has been deleted:')
+    try {
+      await deleteUser.mutateAsync(currentRow.id)
+      toast.success('User deleted successfully')
+      onOpenChange(false)
+      setValue('')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      toast.error(errorMessage)
+    }
   }
 
   return (
@@ -34,7 +43,7 @@ export function UsersDeleteDialog({
       open={open}
       onOpenChange={onOpenChange}
       form='users-delete-form'
-      disabled={value.trim() !== currentRow.username}
+      disabled={value.trim() !== currentRow.username || deleteUser.isPending}
       title={
         <span className='text-destructive'>
           <AlertTriangle
@@ -82,7 +91,7 @@ export function UsersDeleteDialog({
           </Alert>
         </form>
       }
-      confirmText='Delete'
+      confirmText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
       destructive
     />
   )

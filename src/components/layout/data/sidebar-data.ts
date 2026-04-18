@@ -56,31 +56,45 @@ export const sidebarData: SidebarData = {
           title: 'Dashboard',
           url: '/',
           icon: LayoutDashboard,
+          disabled: true,
         },
         {
           title: 'Tasks',
           url: '/tasks',
           icon: ListTodo,
+          disabled: true,
         },
         {
           title: 'Apps',
           url: '/apps',
           icon: Package,
+          disabled: true,
         },
         {
           title: 'Chats',
           url: '/chats',
           badge: '3',
           icon: MessagesSquare,
+          disabled: true,
         },
         {
           title: 'Users',
-          url: '/users',
           icon: Users,
+          items: [
+            {
+              title: 'User List',
+              url: '/users',
+            },
+            {
+              title: 'Roles',
+              url: '/users/roles',
+            },
+          ],
         },
         {
           title: 'Secured by Clerk',
           icon: ClerkLogo,
+          disabled: true,
           items: [
             {
               title: 'Sign In',
@@ -104,6 +118,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Auth',
           icon: ShieldCheck,
+          disabled: true,
           items: [
             {
               title: 'Sign In',
@@ -130,6 +145,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Errors',
           icon: Bug,
+          disabled: true,
           items: [
             {
               title: 'Unauthorized',
@@ -166,6 +182,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Settings',
           icon: Settings,
+          disabled: true,
           items: [
             {
               title: 'Profile',
@@ -198,6 +215,7 @@ export const sidebarData: SidebarData = {
           title: 'Help Center',
           url: '/help-center',
           icon: HelpCircle,
+          disabled: true,
         },
       ],
     },

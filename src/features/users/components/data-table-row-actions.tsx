@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Trash2, UserPen } from 'lucide-react'
+import { Power, PowerOff, Trash2, UserPen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,8 +10,10 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
 import { type User } from '../data/schema'
 import { useUsers } from './users-provider'
+import { useToggleUserStatusMutation } from '../data/users-query'
 
 type DataTableRowActionsProps = {
   row: Row<User>
@@ -19,6 +21,22 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const toggleStatus = useToggleUserStatusMutation()
+  const user = row.original
+  const isActive = user.status === 'active'
+
+  const handleToggleStatus = async () => {
+    try {
+      const updatedUser = await toggleStatus.mutateAsync(user.id)
+      toast.success(
+        `User ${updatedUser.username} is now ${updatedUser.status}`
+      )
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      toast.error(errorMessage)
+    }
+  }
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -41,6 +59,15 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             Edit
             <DropdownMenuShortcut>
               <UserPen size={16} />
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={handleToggleStatus}
+            disabled={toggleStatus.isPending}
+          >
+            {isActive ? 'Deactivate' : 'Activate'}
+            <DropdownMenuShortcut>
+              {isActive ? <PowerOff size={16} /> : <Power size={16} />}
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
