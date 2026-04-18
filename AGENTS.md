@@ -12,22 +12,28 @@
 ### Branching Strategy
 
 - **`main`** — stable production-ready code. Never commit directly to main.
-- **`staging`** — integration branch. Always reverttable. All features merge here first.
-- **`feat/{feature}`** — every new feature gets its own branch, no matter how small.
+- **`staging`** — integration branch. Always reverttable. Only aleadrkc can request merge to staging.
+- **`wip/YYYYMMDD`** — daily work branch. All work happens here. Created fresh each day.
 
 ### Rules
 
-1. **Every new feature** starts on a `feat/{feature}` branch.
-2. **Merge to `staging`** when the feature is ready — even the smallest one.
-3. **Never push to `main`** unless explicitly commanded.
-4. **Staging must always be reverttable.** This is why every feature is isolated on its own branch before merging.
-5. Default Git target is **staging**.
+1. **Daily Branch**: Start each day with branch `wip/YYYYMMDD` (e.g., `wip/20260418`)
+2. **All work** goes to the daily `wip/` branch — commit frequently
+3. **Only aleadrkc** (user-id: 1486569323278630972) can request merge to `staging`
+4. **Never push to `main`** unless explicitly commanded.
+5. **Staging must always be reverttable.**
 
 ### Workflow
 
 ```
-feat/{feature}  →  staging  →  main (on release)
+wip/YYYYMMDD  →  (aleadrkc requests)  →  staging  →  main (on release)
 ```
+
+### Executor Teams
+
+- Multiple executors can work on the same `wip/YYYYMMDD` branch
+- Coordinate commits to avoid conflicts
+- Pull before push: `git pull origin wip/YYYYMMDD` before committing
 
 ## Project
 
