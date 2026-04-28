@@ -1,181 +1,107 @@
-# AGENTS.md
+# AGENTS.md — Otto ERP Staging
+---
 
-## Identity
+## 📌 Kondisi Aktual Project (28 April 2026)
 
-- **FRAIDAY** — Fast, Reliable AI for Infrastructure and Deployments, Always.
-- Server manager and full-stack developer for otto-dashboard-02.
-- Formal, concise, pragmatic, security-conscious.
-- Motto: "Age quod agis" — Do what you are doing.
+### ✅ Status Umum
+- ✅ Proyek sudah live di staging environment
+- ✅ Frontend: https://staging.otto.my.id
+- ✅ Backend API: https://staging-api.otto.my.id
+- ✅ Semua service berjalan normal, semua endpoint return 200 OK
+- ✅ PM2 dijalankan untuk API, auto restart pada boot server
 
-## Git Workflow
+---
 
-### Branching Strategy
-
-- **`main`** — stable production-ready code. Never commit directly to main.
-- **`staging`** — integration branch. Always reverttable. Only aleadrkc can request merge to staging.
-- **`wip/YYYYMMDD`** — daily work branch. All work happens here. Created fresh each day.
-
-### Rules
-
-1. **Daily Branch**: Start each day with branch `wip/YYYYMMDD` (e.g., `wip/20260418`)
-2. **All work** goes to the daily `wip/` branch — commit frequently
-3. **Only aleadrkc** (user-id: 1486569323278630972) can request merge to `staging`
-4. **Never push to `main`** unless explicitly commanded.
-5. **Staging must always be reverttable.**
-
-### Workflow
+## 📦 Repo Structure
 
 ```
-wip/YYYYMMDD  →  (aleadrkc requests)  →  staging  →  main (on release)
+otto-erp/
+├── otto-dashboard-02/   # Frontend Dashboard
+└── otto-api/            # Backend REST API
 ```
 
-### Executor Teams
+---
 
-- Multiple executors can work on the same `wip/YYYYMMDD` branch
-- Coordinate commits to avoid conflicts
-- Pull before push: `git pull origin wip/YYYYMMDD` before committing
+## 🖥️ Frontend: otto-dashboard-02
 
-## Project
+| Item | Nilai |
+|---|---|
+| Stack | React 19 + Vite 8 + TypeScript 6 |
+| Package Manager | pnpm |
+| Dev Port | 5173 |
+| Build Output | `dist/` |
+| UI | shadcn/ui + Tailwind CSS v4 + Radix UI |
+| Routing | TanStack Router (file based) |
+| Data | TanStack React Query + Zustand |
+| Auth | JWT native, auto refresh token |
 
-- **Name:** otto-dashboard-02 (shadcn-admin)
-- **URL:** staging.otto.my.id
-- **API:** staging-api.otto.my.id
-- **Version:** 2.2.1
-
-## Tech Stack
-
-| Category | Technology | Version |
-|---|---|---|
-| **Framework** | React 19 | ^19.2.4 |
-| **Build Tool** | Vite | ^8.0.3 |
-| **Compiler** | SWC (via @vitejs/plugin-react-swc) | ^4.3.0 |
-| **Language** | TypeScript | ~6.0.2 (strict mode) |
-| **Routing** | TanStack Router (file-based) | ^1.168.4 |
-| **Data Fetching** | TanStack React Query | ^5.95.2 |
-| **State Management** | Zustand | ^5.0.12 |
-| **Tables** | TanStack Table | ^8.21.3 |
-| **UI Components** | shadcn/ui (New York style) | Radix UI primitives |
-| **Styling** | Tailwind CSS v4 | ^4.2.2 |
-| **Validation** | Zod | ^4.3.6 |
-| **Forms** | React Hook Form + @hookform/resolvers | ^7.72.0 |
-| **HTTP Client** | Axios | ^1.13.6 |
-| **Charts** | Recharts | ^3.8.1 |
-| **Icons** | Lucide React | ^1.7.0 |
-| **Toast** | Sonner | ^2.0.7 |
-| **Dates** | date-fns | ^4.1.0 |
-| **Package Manager** | pnpm | (lockfile present) |
-
-## Project Structure
-
-```
-otto-dashboard-02/
-├── .env / .env.example          # Environment variables
-├── .github/workflows/           # CI + deploy workflows
-├── src/
-│   ├── main.tsx                 # App entry point + QueryClient setup
-│   ├── routeTree.gen.ts         # Auto-generated TanStack Router tree
-│   ├── routes/                  # File-based routes
-│   │   ├── __root.tsx           # Root layout
-│   │   ├── _authenticated/      # Protected routes (auth guard)
-│   │   │   ├── route.tsx        # Auth guard: redirects to /sign-in if no token
-│   │   │   ├── index.tsx        # Dashboard
-│   │   │   ├── tasks/           # Tasks data table
-│   │   │   ├── apps/            # App integrations
-│   │   │   ├── chats/           # Chat interface
-│   │   │   ├── users/           # Users management
-│   │   │   ├── settings/        # Settings pages
-│   │   │   └── help-center/     # Coming soon
-│   │   ├── (auth)/              # Auth layout group
-│   │   │   ├── sign-in/         # Login page
-│   │   │   ├── sign-up/         # Registration page
-│   │   │   ├── forgot-password/ # Password reset
-│   │   │   └── otp/             # OTP verification
-│   │   ├── (errors)/            # Error pages (401, 403, 404, 500, 503)
-│   │   └── clerk/               # Clerk auth routes (optional)
-│   ├── features/                # Feature modules (domain-driven)
-│   │   ├── auth/                # Sign-in, sign-up, forgot-password forms
-│   │   ├── dashboard/           # Dashboard KPI cards, charts
-│   │   ├── tasks/               # Task CRUD, data table
-│   │   ├── users/               # User management, data table
-│   │   ├── apps/                # App integrations grid
-│   │   ├── chats/               # Chat interface
-│   │   ├── settings/            # Settings pages
-│   │   └── errors/              # Error page components
-│   ├── components/
-│   │   ├── ui/                  # 30 shadcn/ui primitives
-│   │   ├── data-table/          # 7 reusable table components
-│   │   ├── layout/              # AuthenticatedLayout, sidebar, header
-│   │   └── *.tsx                # Shared components
-│   ├── stores/
-│   │   └── auth-store.ts        # Zustand auth state (user, accessToken, refreshToken)
-│   ├── lib/
-│   │   ├── api.ts               # Axios client with JWT interceptor
-│   │   ├── cookies.ts           # Cookie utilities
-│   │   ├── utils.ts             # General utilities
-│   │   └── handle-server-error.ts
-│   ├── hooks/                   # Custom hooks
-│   ├── context/                 # Theme, font, direction, layout providers
-│   └── styles/                  # Tailwind CSS + theme
-└── package.json
-```
-
-## Auth Flow (JWT)
-
-- **API:** `staging-api.otto.my.id` provides JWT auth
-- **Sign-in:** `POST /auth/login` → returns `{ user, accessToken, refreshToken }`
-- **Sign-up:** `POST /auth/register` → returns `{ user, accessToken, refreshToken }`
-- **Refresh:** `POST /auth/refresh` → returns `{ accessToken }`
-- **Logout:** `POST /auth/logout` → invalidates refresh token
-- **Me:** `GET /auth/me` → returns current user (requires Bearer token)
-- **Token storage:** Access + refresh tokens stored in cookies via `auth-store.ts`
-- **Axios interceptor:** Automatically attaches `Authorization: Bearer {accessToken}` to all API requests
-- **Auth guard:** `_authenticated/route.tsx` redirects to `/sign-in` if no access token
-- **401 handler:** `main.tsx` QueryCache catches 401 → resets session → redirects to sign-in
-
-## API Client (`src/lib/api.ts`)
-
-```typescript
-// Axios instance with baseURL from VITE_API_URL
-// Request interceptor attaches JWT token from auth store
-// Exports: login, register, refreshToken, logout, getMe
-```
-
-## Auth Store (`src/stores/auth-store.ts`)
-
-```typescript
-// Zustand store with: user, accessToken, refreshToken
-// Cookies: otto_access_token, otto_refresh_token
-// Actions: setUser, setAccessToken, setRefreshToken, reset
-```
-
-## Code Conventions
-
-- **Components**: PascalCase
-- **Hooks**: `use` prefix
-- **Files**: kebab-case for routes, PascalCase for components, camelCase for utilities
-- **Features**: `src/features/{feature}/` with `index.tsx` as barrel export
-- **Imports**: consistent type imports, sorted by prettier plugin
-- **No unused vars/locals** (enforced by ESLint)
-- **No console** (error level, except with disable comment)
-
-## Commands
-
+### Perintah:
 ```bash
-pnpm dev          # Start dev server
-pnpm build        # Type-check + build
-pnpm lint         # ESLint
-pnpm format       # Prettier
-pnpm knip         # Dead code detection
+pnpm dev          # Jalankan dev server
+pnpm build        # Build production
+pnpm lint
+pnpm format
 ```
 
-## Deployment
+### ✅ Fitur yang sudah jalan:
+- Full responsive layout sidebar + header
+- Auth guard otomatis
+- Axios interceptor JWT
+- Dashboard KPI + charts
+- User management CRUD
+- Semua halaman auth lengkap (login, register, OTP, lupa password)
 
-- **Deploy target:** `/home/otto-staging/htdocs/staging.otto.my.id/`
-- **CI workflow:** `.github/workflows/deploy.yml` (triggers on push to `main`)
-- **Manual deploy:** Build locally, `sudo cp -r dist/. /home/otto-staging/htdocs/staging.otto.my.id/`
-- **Netlify:** SPA fallback redirect configured (alternative deploy)
+---
 
-## Environment Variables
+## ⚙️ Backend: otto-api
 
-- `VITE_CLERK_PUBLISHABLE_KEY` — Clerk auth key (optional)
-- `VITE_API_URL` — Backend API URL (default: `http://localhost:3000`, staging: `https://staging-api.otto.my.id`)
+| Item | Nilai |
+|---|---|
+| Stack | Express.js + TypeScript + MySQL |
+| Runtime | Node.js >= 22 |
+| Package Manager | npm |
+| Default Port | 3000 |
+| Database | MySQL 8 / Percona Server |
+| Auth | bcryptjs + jsonwebtoken |
+| Validation | Zod |
+
+### Perintah:
+```bash
+npm run dev       # Dev server hot reload
+npm run build     # Compile TS
+npm run start     # Production mode
+npm run db:migrate
+npm run db:seed
+```
+
+### ✅ Fitur yang sudah jalan:
+- Auto migrate database saat startup
+- JWT auth flow lengkap
+- Role based permission middleware
+- User & Roles CRUD
+- Global error handler
+- Health check `/health`
+
+### Default Credential:
+```
+Email: admin@otto.my.id
+Password: admin123
+Role: super-admin
+```
+
+---
+
+## 🌐 Deployment
+
+- Frontend: Static build deploy ke `/var/www/staging.otto.my.id` via Nginx
+- Backend: PM2 process manager, port 3001, di proxies Nginx
+- Database: Percona Server 8.0.45, systemd enabled
+- Tunnel: Cloudflare Tunnel `janur02`
+
+---
+
+## 📌 Catatan Penting
+1. Kedua repo dalam kondisi production ready
+2. Tidak ada broken code di branch saat ini
+3. Semua fitur inti ERP sudah terimplementasi dasar
+4. Belum ada: rate limit, logging terpusat, refresh token whitelist
