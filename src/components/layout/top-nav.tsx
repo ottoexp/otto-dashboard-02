@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Menu } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,60 +7,133 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import { sidebarData } from './data/sidebar-data'
+import { TeamSwitcherSimple } from './team-switcher-simple'
+import { ProfileDropdown } from '@/components/profile-dropdown'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { ConfigDrawer } from '@/components/config-drawer'
+import { ChevronDown, Menu } from 'lucide-react'
+import { useIsMobile } from '@/hooks/use-mobile'
 
-type TopNavProps = React.HTMLAttributes<HTMLElement> & {
-  links: {
-    title: string
-    href: string
-    isActive: boolean
-    disabled?: boolean
-  }[]
-}
+export function TopNav() {
+  const isMobile = useIsMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-export function TopNav({ className, links, ...props }: TopNavProps) {
   return (
-    <>
-      <div className='lg:hidden'>
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button size='icon' variant='outline' className='md:size-7'>
-              <Menu />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side='bottom' align='start'>
-            {links.map(({ title, href, isActive, disabled }) => (
-              <DropdownMenuItem key={`${title}-${href}`} asChild>
-                <Link
-                  to={href}
-                  className={!isActive ? 'text-muted-foreground' : ''}
-                  disabled={disabled}
-                >
-                  {title}
-                </Link>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <nav className="border-b bg-background">
+      <div className="flex h-16 items-center px-4 gap-4">
+        {/* Left - Logo & Team Switcher */}
+        <div className="flex items-center gap-4">
+          <TeamSwitcherSimple teams={sidebarData.teams} />
+        </div>
 
-      <nav
-        className={cn(
-          'hidden items-center space-x-4 lg:flex lg:space-x-4 xl:space-x-6',
-          className
+        {/* Center - Navigation Menu (Desktop) */}
+        {!isMobile && (
+          <div className="flex items-center gap-1 flex-1">
+            {sidebarData.navGroups.map((group) =>
+              group.items.map((item) => {
+                if (item.items) {
+                  return (
+                    <DropdownMenu key={item.title}>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="gap-1">
+                          {item.title}
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {item.items.map((subItem) => (
+                          <DropdownMenuItem key={subItem.title} asChild>
+                            <Link to={subItem.url} className="cursor-pointer">
+                              {subItem.title}
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )
+                }
+                return (
+                  <Button
+                    key={item.title}
+                    variant="ghost"
+                    asChild
+                    disabled={item.disabled}
+                  >
+                    <Link to={item.url}>{item.title}</Link>
+                  </Button>
+                )
+              })
+            )}
+          </div>
         )}
-        {...props}
-      >
-        {links.map(({ title, href, isActive, disabled }) => (
-          <Link
-            key={`${title}-${href}`}
-            to={href}
-            disabled={disabled}
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive ? '' : 'text-muted-foreground'}`}
-          >
-            {title}
-          </Link>
-        ))}
-      </nav>
-    </>
+
+        {/* Mobile - Hamburger Menu */}
+        {isMobile && (
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="ml-auto">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 mt-4">
+                {sidebarData.navGroups.map((group) =>
+                  group.items.map((item) => {
+                    if (item.items) {
+                      return (
+                        <div key={item.title} className="space-y-1">
+                          <p className="text-sm font-semibold px-2">{item.title}</p>
+                          {item.items.map((subItem) => (
+                            <Button
+                              key={subItem.title}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              asChild
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <Link to={subItem.url}>{subItem.title}</Link>
+                            </Button>
+                          ))}
+                        </div>
+                      )
+                    }
+                    return (
+                      <Button
+                        key={item.title}
+                        variant="ghost"
+                        className="w-full justify-start"
+                        asChild
+                        disabled={item.disabled}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Link to={item.url}>{item.title}</Link>
+                      </Button>
+                    )
+                  })
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
+
+        {/* Right - Theme, Settings, Profile */}
+        <div className="flex items-center gap-2">
+          <ThemeSwitch />
+          <ConfigDrawer />
+          <ProfileDropdown />
+        </div>
+      </div>
+    </nav>
   )
 }

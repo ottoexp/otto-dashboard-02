@@ -24,10 +24,23 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = getCookie(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
-  const refreshCookieState = getCookie(REFRESH_TOKEN)
-  const initRefreshToken = refreshCookieState ? JSON.parse(refreshCookieState) : ''
+  let initToken = ''
+  let initRefreshToken = ''
+  
+  try {
+    const cookieState = getCookie(ACCESS_TOKEN)
+    initToken = cookieState ? JSON.parse(cookieState) : ''
+  } catch {
+    initToken = ''
+  }
+  
+  try {
+    const refreshCookieState = getCookie(REFRESH_TOKEN)
+    initRefreshToken = refreshCookieState ? JSON.parse(refreshCookieState) : ''
+  } catch {
+    initRefreshToken = ''
+  }
+  
   return {
     auth: {
       user: null,

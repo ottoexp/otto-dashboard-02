@@ -5,9 +5,6 @@ import { IconDir } from '@/assets/custom/icon-dir'
 import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
 import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
 import { IconLayoutFull } from '@/assets/custom/icon-layout-full'
-import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating'
-import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset'
-import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
 import { IconThemeDark } from '@/assets/custom/icon-theme-dark'
 import { IconThemeLight } from '@/assets/custom/icon-theme-light'
 import { IconThemeSystem } from '@/assets/custom/icon-theme-system'
@@ -25,16 +22,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { useSidebar } from './ui/sidebar'
 
 export function ConfigDrawer() {
-  const { setOpen } = useSidebar()
   const { resetDir } = useDirection()
   const { resetTheme } = useTheme()
   const { resetLayout } = useLayout()
 
   const handleReset = () => {
-    setOpen(true)
     resetDir()
     resetTheme()
     resetLayout()
@@ -62,7 +56,6 @@ export function ConfigDrawer() {
         </SheetHeader>
         <div className='space-y-6 overflow-y-auto px-4'>
           <ThemeConfig />
-          <SidebarConfig />
           <LayoutConfig />
           <DirConfig />
         </div>
@@ -211,89 +204,33 @@ function ThemeConfig() {
   )
 }
 
-function SidebarConfig() {
-  const { defaultVariant, variant, setVariant } = useLayout()
-  return (
-    <div className='max-md:hidden'>
-      <SectionTitle
-        title='Sidebar'
-        showReset={defaultVariant !== variant}
-        onReset={() => setVariant(defaultVariant)}
-      />
-      <Radio
-        value={variant}
-        onValueChange={setVariant}
-        className='grid w-full max-w-md grid-cols-3 gap-4'
-        aria-label='Select sidebar style'
-        aria-describedby='sidebar-description'
-      >
-        {[
-          {
-            value: 'inset',
-            label: 'Inset',
-            icon: IconSidebarInset,
-          },
-          {
-            value: 'floating',
-            label: 'Floating',
-            icon: IconSidebarFloating,
-          },
-          {
-            value: 'sidebar',
-            label: 'Sidebar',
-            icon: IconSidebarSidebar,
-          },
-        ].map((item) => (
-          <RadioGroupItem key={item.value} item={item} />
-        ))}
-      </Radio>
-      <div id='sidebar-description' className='sr-only'>
-        Choose between inset, floating, or standard sidebar layout
-      </div>
-    </div>
-  )
-}
-
 function LayoutConfig() {
-  const { open, setOpen } = useSidebar()
   const { defaultCollapsible, collapsible, setCollapsible } = useLayout()
-
-  const radioState = open ? 'default' : collapsible
 
   return (
     <div className='max-md:hidden'>
       <SectionTitle
         title='Layout'
-        showReset={radioState !== 'default'}
-        onReset={() => {
-          setOpen(true)
-          setCollapsible(defaultCollapsible)
-        }}
+        showReset={collapsible !== defaultCollapsible}
+        onReset={() => setCollapsible(defaultCollapsible)}
       />
       <Radio
-        value={radioState}
-        onValueChange={(v) => {
-          if (v === 'default') {
-            setOpen(true)
-            return
-          }
-          setOpen(false)
-          setCollapsible(v as Collapsible)
-        }}
+        value={collapsible}
+        onValueChange={(v) => setCollapsible(v as Collapsible)}
         className='grid w-full max-w-md grid-cols-3 gap-4'
         aria-label='Select layout style'
         aria-describedby='layout-description'
       >
         {[
           {
-            value: 'default',
-            label: 'Default',
-            icon: IconLayoutDefault,
-          },
-          {
             value: 'icon',
             label: 'Compact',
             icon: IconLayoutCompact,
+          },
+          {
+            value: 'none',
+            label: 'Default',
+            icon: IconLayoutDefault,
           },
           {
             value: 'offcanvas',
@@ -305,7 +242,7 @@ function LayoutConfig() {
         ))}
       </Radio>
       <div id='layout-description' className='sr-only'>
-        Choose between default expanded, compact icon-only, or full layout mode
+        Choose between compact icon-only, default, or full layout mode
       </div>
     </div>
   )

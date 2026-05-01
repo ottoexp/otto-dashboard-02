@@ -221,3 +221,257 @@ export async function getPermissions(): Promise<Permission[]> {
   const { data } = await api.get<Permission[]>('/roles/permissions')
   return data
 }
+
+// Customers types
+export interface Customer {
+  id: string
+  name: string
+  phone: string
+  vehicle: string
+  plateNumber: string
+  totalOrders: number
+  lastVisit: string | null
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateCustomerPayload {
+  name: string
+  phone: string
+  vehicle: string
+  plateNumber: string
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateCustomerPayload {
+  name?: string
+  phone?: string
+  vehicle?: string
+  plateNumber?: string
+  status?: 'active' | 'inactive'
+}
+
+// Customers API
+export async function getCustomers(): Promise<PaginatedResponse<Customer>> {
+  const { data } = await api.get<PaginatedResponse<Customer>>('/customers?page=1&limit=10')
+  return data
+}
+
+export async function getCustomer(id: string): Promise<Customer> {
+  const { data } = await api.get<Customer>(`/customers/${id}`)
+  return data
+}
+
+export async function createCustomer(payload: CreateCustomerPayload): Promise<Customer> {
+  const { data } = await api.post<Customer>('/customers', payload)
+  return data
+}
+
+export async function updateCustomer(id: string, payload: UpdateCustomerPayload): Promise<Customer> {
+  const { data } = await api.put<Customer>(`/customers/${id}`, payload)
+  return data
+}
+
+export async function deleteCustomer(id: string): Promise<void> {
+  await api.delete(`/customers/${id}`)
+}
+
+// Inventory types
+export interface Inventory {
+  id: string
+  code: string
+  name: string
+  category: string
+  stock: number
+  buyPrice: number
+  sellPrice: number
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateInventoryPayload {
+  code: string
+  name: string
+  category: string
+  stock: number
+  buyPrice: number
+  sellPrice: number
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateInventoryPayload {
+  code?: string
+  name?: string
+  category?: string
+  stock?: number
+  buyPrice?: number
+  sellPrice?: number
+  status?: 'active' | 'inactive'
+}
+
+// Inventory API
+export async function getInventory(): Promise<Inventory[]> {
+  const { data } = await api.get<{ data: Inventory[], pagination: any }>('/inventory')
+  return data.data
+}
+
+export async function createInventory(payload: CreateInventoryPayload): Promise<Inventory> {
+  const { data } = await api.post<Inventory>('/inventory', payload)
+  return data
+}
+
+export async function deleteInventory(id: string): Promise<void> {
+  await api.delete(`/inventory/${id}`)
+}
+
+// Team types
+export interface Team {
+  id: string
+  full_name: string
+  phone: string
+  email: string | null
+  position: string
+  base_salary: number
+  join_date: string | null
+  address: string | null
+  emergency_contact: string | null
+  notes: string | null
+  status: 'active' | 'inactive' | 'resigned' | 'suspended'
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateTeamPayload {
+  full_name: string
+  phone: string
+  email?: string
+  position: string
+  base_salary: number
+  join_date?: string
+  address?: string
+  emergency_contact?: string
+  notes?: string
+  status?: 'active' | 'inactive' | 'resigned' | 'suspended'
+}
+
+export interface UpdateTeamPayload {
+  full_name?: string
+  phone?: string
+  email?: string
+  position?: string
+  base_salary?: number
+  join_date?: string
+  address?: string
+  emergency_contact?: string
+  notes?: string
+  status?: 'active' | 'inactive' | 'resigned' | 'suspended'
+}
+
+// Team API
+export async function getTeam(): Promise<{ data: Team[], pagination: any }> {
+  const { data } = await api.get<{ data: Team[], pagination: any }>('/team')
+  return data
+}
+
+export async function createTeam(payload: CreateTeamPayload): Promise<Team> {
+  const { data } = await api.post<Team>('/team', payload)
+  return data
+}
+
+export async function updateTeam(id: string, payload: UpdateTeamPayload): Promise<Team> {
+  const { data } = await api.put<Team>(`/team/${id}`, payload)
+  return data
+}
+
+export async function deleteTeam(id: string): Promise<void> {
+  await api.delete(`/team/${id}`)
+}
+
+// Services types
+export interface Service {
+  id: string
+  name: string
+  description: string | null
+  price: number
+  duration: number
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateServicePayload {
+  name: string
+  description?: string
+  price: number
+  duration: number
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateServicePayload {
+  name?: string
+  description?: string
+  price?: number
+  duration?: number
+  status?: 'active' | 'inactive'
+}
+
+// Services API
+export async function getServices(): Promise<Service[]> {
+  const { data } = await api.get<Service[]>('/services')
+  return data
+}
+
+export async function createService(payload: CreateServicePayload): Promise<Service> {
+  const { data } = await api.post<Service>('/services', payload)
+  return data
+}
+
+export async function deleteService(id: string): Promise<void> {
+  await api.delete(`/services/${id}`)
+}
+
+// Transactions types
+export interface Transaction {
+  id: string
+  invoiceNumber: string
+  customerId: string
+  customerName: string
+  description: string
+  total: number
+  date: string
+  status: 'pending' | 'paid' | 'cancelled'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTransactionPayload {
+  customerId: string
+  description: string
+  total: number
+  status?: 'pending' | 'paid' | 'cancelled'
+}
+
+export interface UpdateTransactionPayload {
+  customerId?: string
+  description?: string
+  total?: number
+  status?: 'pending' | 'paid' | 'cancelled'
+}
+
+// Transactions API
+export async function getTransactions(): Promise<Transaction[]> {
+  const { data } = await api.get<Transaction[]>('/transactions')
+  return data
+}
+
+export async function createTransaction(payload: CreateTransactionPayload): Promise<Transaction> {
+  const { data } = await api.post<Transaction>('/transactions', payload)
+  return data
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  await api.delete(`/transactions/${id}`)
+}

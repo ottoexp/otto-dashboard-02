@@ -1,28 +1,11 @@
 import {
-  Construction,
-  LayoutDashboard,
-  Monitor,
-  Bug,
-  ListTodo,
-  FileX,
-  HelpCircle,
-  Lock,
-  Bell,
-  Package,
-  Palette,
-  ServerOff,
-  Settings,
-  Wrench,
-  UserCog,
-  UserX,
-  Users,
-  MessagesSquare,
-  ShieldCheck,
-  AudioWaveform,
   Command,
-  GalleryVerticalEnd,
+  User,
+  Package2,
+  Users as TeamIcon,
+  Wrench as ServicesIcon,
+  CreditCard as TransactionsIcon,
 } from 'lucide-react'
-import { ClerkLogo } from '@/assets/clerk-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
@@ -33,191 +16,71 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'WEP',
       logo: Command,
       plan: 'Vite + ShadcnUI',
-    },
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
     },
   ],
   navGroups: [
     {
-      title: 'General',
+      title: '',
       items: [
         {
-          title: 'Dashboard',
-          url: '/',
-          icon: LayoutDashboard,
-          disabled: true,
+          title: 'Customer',
+          url: '/customers',
+          icon: User,
         },
         {
-          title: 'Tasks',
-          url: '/tasks',
-          icon: ListTodo,
-          disabled: true,
+          title: 'Sales',
+          url: '/services/request',
+          icon: ServicesIcon,
         },
         {
-          title: 'Apps',
-          url: '/apps',
-          icon: Package,
-          disabled: true,
+          title: 'Inventory',
+          url: '/inventory/request',
+          icon: Package2,
         },
         {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: MessagesSquare,
-          disabled: true,
-        },
-        {
-          title: 'Users',
-          icon: Users,
+          title: 'Team',
+          icon: TeamIcon,
           items: [
             {
-              title: 'User List',
-              url: '/users',
+              title: 'Schedule',
+              url: '/team/schedule',
             },
             {
-              title: 'Roles',
-              url: '/users/roles',
+              title: 'Absensi',
+              url: '/team/absensi',
             },
           ],
         },
         {
-          title: 'Secured by Clerk',
-          icon: ClerkLogo,
-          disabled: true,
+          title: 'Finance',
+          icon: TransactionsIcon,
           items: [
             {
-              title: 'Sign In',
-              url: '/clerk/sign-in',
+              title: 'Cash',
+              url: '/transactions/cash',
             },
             {
-              title: 'Sign Up',
-              url: '/clerk/sign-up',
+              title: 'Bank',
+              url: '/transactions/bank',
             },
             {
-              title: 'User Management',
-              url: '/clerk/user-management',
+              title: 'Ledger',
+              url: '/transactions/ledger',
+            },
+            {
+              title: 'Report',
+              url: '/transactions/report',
+            },
+            {
+              title: 'Pajak',
+              url: '/transactions/pajak',
             },
           ],
         },
       ],
     },
-    {
-      title: 'Pages',
-      items: [
-        {
-          title: 'Auth',
-          icon: ShieldCheck,
-          disabled: true,
-          items: [
-            {
-              title: 'Sign In',
-              url: '/sign-in',
-            },
-            {
-              title: 'Sign In (2 Col)',
-              url: '/sign-in-2',
-            },
-            {
-              title: 'Sign Up',
-              url: '/sign-up',
-            },
-            {
-              title: 'Forgot Password',
-              url: '/forgot-password',
-            },
-            {
-              title: 'OTP',
-              url: '/otp',
-            },
-          ],
-        },
-        {
-          title: 'Errors',
-          icon: Bug,
-          disabled: true,
-          items: [
-            {
-              title: 'Unauthorized',
-              url: '/errors/unauthorized',
-              icon: Lock,
-            },
-            {
-              title: 'Forbidden',
-              url: '/errors/forbidden',
-              icon: UserX,
-            },
-            {
-              title: 'Not Found',
-              url: '/errors/not-found',
-              icon: FileX,
-            },
-            {
-              title: 'Internal Server Error',
-              url: '/errors/internal-server-error',
-              icon: ServerOff,
-            },
-            {
-              title: 'Maintenance Error',
-              url: '/errors/maintenance-error',
-              icon: Construction,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Other',
-      items: [
-        {
-          title: 'Settings',
-          icon: Settings,
-          disabled: true,
-          items: [
-            {
-              title: 'Profile',
-              url: '/settings',
-              icon: UserCog,
-            },
-            {
-              title: 'Account',
-              url: '/settings/account',
-              icon: Wrench,
-            },
-            {
-              title: 'Appearance',
-              url: '/settings/appearance',
-              icon: Palette,
-            },
-            {
-              title: 'Notifications',
-              url: '/settings/notifications',
-              icon: Bell,
-            },
-            {
-              title: 'Display',
-              url: '/settings/display',
-              icon: Monitor,
-            },
-          ],
-        },
-        {
-          title: 'Help Center',
-          url: '/help-center',
-          icon: HelpCircle,
-          disabled: true,
-        },
-      ],
-    },
-  ],
+   ],
 }

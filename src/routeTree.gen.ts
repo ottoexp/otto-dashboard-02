@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ClerkRouteRouteImport } from './routes/clerk/route'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -41,6 +43,22 @@ import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_a
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 
+const AuthenticatedTransactionsLazyRouteImport = createFileRoute(
+  '/_authenticated/transactions',
+)()
+const AuthenticatedTeamLazyRouteImport = createFileRoute(
+  '/_authenticated/team',
+)()
+const AuthenticatedServicesLazyRouteImport = createFileRoute(
+  '/_authenticated/services',
+)()
+const AuthenticatedInventoryLazyRouteImport = createFileRoute(
+  '/_authenticated/inventory',
+)()
+const AuthenticatedCustomersLazyRouteImport = createFileRoute(
+  '/_authenticated/customers',
+)()
+
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
   path: '/clerk',
@@ -55,6 +73,45 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTransactionsLazyRoute =
+  AuthenticatedTransactionsLazyRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/transactions.lazy').then((d) => d.Route),
+  )
+const AuthenticatedTeamLazyRoute = AuthenticatedTeamLazyRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any).lazy(() =>
+  import('./routes/_authenticated/team.lazy').then((d) => d.Route),
+)
+const AuthenticatedServicesLazyRoute =
+  AuthenticatedServicesLazyRouteImport.update({
+    id: '/services',
+    path: '/services',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/services.lazy').then((d) => d.Route),
+  )
+const AuthenticatedInventoryLazyRoute =
+  AuthenticatedInventoryLazyRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/inventory.lazy').then((d) => d.Route),
+  )
+const AuthenticatedCustomersLazyRoute =
+  AuthenticatedCustomersLazyRouteImport.update({
+    id: '/customers',
+    path: '/customers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/customers.lazy').then((d) => d.Route),
+  )
 const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
   path: '/503',
@@ -217,6 +274,11 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/customers': typeof AuthenticatedCustomersLazyRoute
+  '/inventory': typeof AuthenticatedInventoryLazyRoute
+  '/services': typeof AuthenticatedServicesLazyRoute
+  '/team': typeof AuthenticatedTeamLazyRoute
+  '/transactions': typeof AuthenticatedTransactionsLazyRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -245,6 +307,11 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
+  '/customers': typeof AuthenticatedCustomersLazyRoute
+  '/inventory': typeof AuthenticatedInventoryLazyRoute
+  '/services': typeof AuthenticatedServicesLazyRoute
+  '/team': typeof AuthenticatedTeamLazyRoute
+  '/transactions': typeof AuthenticatedTransactionsLazyRoute
   '/': typeof AuthenticatedIndexRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
@@ -279,6 +346,11 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
+  '/_authenticated/customers': typeof AuthenticatedCustomersLazyRoute
+  '/_authenticated/inventory': typeof AuthenticatedInventoryLazyRoute
+  '/_authenticated/services': typeof AuthenticatedServicesLazyRoute
+  '/_authenticated/team': typeof AuthenticatedTeamLazyRoute
+  '/_authenticated/transactions': typeof AuthenticatedTransactionsLazyRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
@@ -312,6 +384,11 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/customers'
+    | '/inventory'
+    | '/services'
+    | '/team'
+    | '/transactions'
     | '/errors/$error'
     | '/settings/account'
     | '/settings/appearance'
@@ -340,6 +417,11 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
+    | '/customers'
+    | '/inventory'
+    | '/services'
+    | '/team'
+    | '/transactions'
     | '/'
     | '/errors/$error'
     | '/settings/account'
@@ -373,6 +455,11 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
+    | '/_authenticated/customers'
+    | '/_authenticated/inventory'
+    | '/_authenticated/services'
+    | '/_authenticated/team'
+    | '/_authenticated/transactions'
     | '/_authenticated/'
     | '/_authenticated/errors/$error'
     | '/_authenticated/settings/account'
@@ -427,6 +514,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transactions': {
+      id: '/_authenticated/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof AuthenticatedTransactionsLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/services': {
+      id: '/_authenticated/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof AuthenticatedServicesLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthenticatedInventoryLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/customers': {
+      id: '/_authenticated/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof AuthenticatedCustomersLazyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/(errors)/503': {
@@ -653,6 +775,11 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
+  AuthenticatedCustomersLazyRoute: typeof AuthenticatedCustomersLazyRoute
+  AuthenticatedInventoryLazyRoute: typeof AuthenticatedInventoryLazyRoute
+  AuthenticatedServicesLazyRoute: typeof AuthenticatedServicesLazyRoute
+  AuthenticatedTeamLazyRoute: typeof AuthenticatedTeamLazyRoute
+  AuthenticatedTransactionsLazyRoute: typeof AuthenticatedTransactionsLazyRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedUsersRolesRoute: typeof AuthenticatedUsersRolesRoute
@@ -665,6 +792,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
+  AuthenticatedCustomersLazyRoute: AuthenticatedCustomersLazyRoute,
+  AuthenticatedInventoryLazyRoute: AuthenticatedInventoryLazyRoute,
+  AuthenticatedServicesLazyRoute: AuthenticatedServicesLazyRoute,
+  AuthenticatedTeamLazyRoute: AuthenticatedTeamLazyRoute,
+  AuthenticatedTransactionsLazyRoute: AuthenticatedTransactionsLazyRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedUsersRolesRoute: AuthenticatedUsersRolesRoute,
