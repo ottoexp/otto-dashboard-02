@@ -4,7 +4,6 @@ import {
   Package2,
   Users as PeopleIcon,
   Wrench as ServicesIcon,
-  CreditCard as AccountingIcon,
   Calendar,
   DollarSign,
   Building2,
@@ -87,7 +86,6 @@ export const sidebarData: SidebarData = {
             },
             {
               title: 'Inventory',
-              url: '/operational/inventory',
               icon: Package2,
               permission: { resource: 'inventory', action: 'read' },
               items: [

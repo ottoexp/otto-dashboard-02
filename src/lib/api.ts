@@ -556,3 +556,427 @@ export async function updateInventory(id: string, payload: UpdateInventoryPayloa
   const { data } = await api.put<Inventory>(`/inventory/${id}`, payload)
   return data
 }
+
+// Attendance types
+export interface Attendance {
+  id: string
+  employeeId: string
+  employeeName: string
+  date: string
+  checkIn: string | null
+  checkOut: string | null
+  status: 'present' | 'absent' | 'late' | 'half-day'
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateAttendancePayload {
+  employeeId: string
+  employeeName: string
+  date: string
+  checkIn?: string
+  checkOut?: string
+  status: 'present' | 'absent' | 'late' | 'half-day'
+  notes?: string
+}
+
+export interface UpdateAttendancePayload {
+  employeeId?: string
+  employeeName?: string
+  date?: string
+  checkIn?: string
+  checkOut?: string
+  status?: 'present' | 'absent' | 'late' | 'half-day'
+  notes?: string
+}
+
+// Attendance API
+export async function getAttendance(): Promise<Attendance[]> {
+  const { data } = await api.get<Attendance[]>('/attendance')
+  return data
+}
+
+export async function createAttendance(payload: CreateAttendancePayload): Promise<Attendance> {
+  const { data } = await api.post<Attendance>('/attendance', payload)
+  return data
+}
+
+export async function updateAttendance(id: string, payload: UpdateAttendancePayload): Promise<Attendance> {
+  const { data } = await api.put<Attendance>(`/attendance/${id}`, payload)
+  return data
+}
+
+export async function deleteAttendance(id: string): Promise<void> {
+  await api.delete(`/attendance/${id}`)
+}
+
+// Cash types
+export interface Cash {
+  id: string
+  transactionType: 'in' | 'out'
+  category: string
+  amount: number
+  description: string
+  date: string
+  reference: string | null
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateCashPayload {
+  transactionType: 'in' | 'out'
+  category: string
+  amount: number
+  description: string
+  date: string
+  reference?: string
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateCashPayload {
+  transactionType?: 'in' | 'out'
+  category?: string
+  amount?: number
+  description?: string
+  date?: string
+  reference?: string
+  status?: 'active' | 'inactive'
+}
+
+// Cash API
+export async function getCash(): Promise<Cash[]> {
+  const { data } = await api.get<Cash[]>('/cash')
+  return data
+}
+
+export async function createCash(payload: CreateCashPayload): Promise<Cash> {
+  const { data } = await api.post<Cash>('/cash', payload)
+  return data
+}
+
+export async function updateCash(id: string, payload: UpdateCashPayload): Promise<Cash> {
+  const { data } = await api.put<Cash>(`/cash/${id}`, payload)
+  return data
+}
+
+export async function deleteCash(id: string): Promise<void> {
+  await api.delete(`/cash/${id}`)
+}
+
+// Bank types
+export interface Bank {
+  id: string
+  bankName: string
+  accountNumber: string
+  accountName: string
+  balance: number
+  currency: string
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateBankPayload {
+  bankName: string
+  accountNumber: string
+  accountName: string
+  balance: number
+  currency: string
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateBankPayload {
+  bankName?: string
+  accountNumber?: string
+  accountName?: string
+  balance?: number
+  currency?: string
+  status?: 'active' | 'inactive'
+}
+
+// Bank API
+export async function getBank(): Promise<Bank[]> {
+  const { data } = await api.get<Bank[]>('/bank')
+  return data
+}
+
+export async function createBank(payload: CreateBankPayload): Promise<Bank> {
+  const { data } = await api.post<Bank>('/bank', payload)
+  return data
+}
+
+export async function updateBank(id: string, payload: UpdateBankPayload): Promise<Bank> {
+  const { data } = await api.put<Bank>(`/bank/${id}`, payload)
+  return data
+}
+
+export async function deleteBank(id: string): Promise<void> {
+  await api.delete(`/bank/${id}`)
+}
+
+// Ledger types
+export interface Ledger {
+  id: string
+  accountCode: string
+  accountName: string
+  debit: number
+  credit: number
+  balance: number
+  description: string
+  date: string
+  reference: string | null
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateLedgerPayload {
+  accountCode: string
+  accountName: string
+  debit: number
+  credit: number
+  description: string
+  date: string
+  reference?: string
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateLedgerPayload {
+  accountCode?: string
+  accountName?: string
+  debit?: number
+  credit?: number
+  description?: string
+  date?: string
+  reference?: string
+  status?: 'active' | 'inactive'
+}
+
+// Ledger API
+export async function getLedger(): Promise<Ledger[]> {
+  const { data } = await api.get<Ledger[]>('/ledger')
+  return data
+}
+
+export async function createLedger(payload: CreateLedgerPayload): Promise<Ledger> {
+  const { data } = await api.post<Ledger>('/ledger', payload)
+  return data
+}
+
+export async function updateLedger(id: string, payload: UpdateLedgerPayload): Promise<Ledger> {
+  const { data } = await api.put<Ledger>(`/ledger/${id}`, payload)
+  return data
+}
+
+export async function deleteLedger(id: string): Promise<void> {
+  await api.delete(`/ledger/${id}`)
+}
+
+// Tax types
+export interface Tax {
+  id: string
+  taxName: string
+  taxCode: string
+  rate: number
+  description: string | null
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTaxPayload {
+  taxName: string
+  taxCode: string
+  rate: number
+  description?: string
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateTaxPayload {
+  taxName?: string
+  taxCode?: string
+  rate?: number
+  description?: string
+  status?: 'active' | 'inactive'
+}
+
+// Tax API
+export async function getTax(): Promise<Tax[]> {
+  const { data } = await api.get<Tax[]>('/tax')
+  return data
+}
+
+export async function createTax(payload: CreateTaxPayload): Promise<Tax> {
+  const { data } = await api.post<Tax>('/tax', payload)
+  return data
+}
+
+export async function updateTax(id: string, payload: UpdateTaxPayload): Promise<Tax> {
+  const { data } = await api.put<Tax>(`/tax/${id}`, payload)
+  return data
+}
+
+export async function deleteTax(id: string): Promise<void> {
+  await api.delete(`/tax/${id}`)
+}
+
+// Admin types
+export interface Admin {
+  id: string
+  name: string
+  email: string
+  role: string
+  permissions: string[]
+  status: 'active' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateAdminPayload {
+  name: string
+  email: string
+  role: string
+  permissions: string[]
+  status?: 'active' | 'inactive'
+}
+
+export interface UpdateAdminPayload {
+  name?: string
+  email?: string
+  role?: string
+  permissions?: string[]
+  status?: 'active' | 'inactive'
+}
+
+// Admin API
+export async function getAdmin(): Promise<Admin[]> {
+  const { data } = await api.get<Admin[]>('/admin')
+  return data
+}
+
+export async function createAdmin(payload: CreateAdminPayload): Promise<Admin> {
+  const { data } = await api.post<Admin>('/admin', payload)
+  return data
+}
+
+export async function updateAdmin(id: string, payload: UpdateAdminPayload): Promise<Admin> {
+  const { data } = await api.put<Admin>(`/admin/${id}`, payload)
+  return data
+}
+
+export async function deleteAdmin(id: string): Promise<void> {
+  await api.delete(`/admin/${id}`)
+}
+
+// People types
+export interface People {
+  id: string
+  fullName: string
+  phone: string
+  email: string | null
+  role: string
+  department: string
+  joinDate: string
+  status: 'active' | 'inactive' | 'resigned'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreatePeoplePayload {
+  fullName: string
+  phone: string
+  email?: string
+  role: string
+  department: string
+  joinDate: string
+  status?: 'active' | 'inactive' | 'resigned'
+}
+
+export interface UpdatePeoplePayload {
+  fullName?: string
+  phone?: string
+  email?: string
+  role?: string
+  department?: string
+  joinDate?: string
+  status?: 'active' | 'inactive' | 'resigned'
+}
+
+// People API
+export async function getPeople(): Promise<People[]> {
+  const { data } = await api.get<People[]>('/people')
+  return data
+}
+
+export async function createPeople(payload: CreatePeoplePayload): Promise<People> {
+  const { data } = await api.post<People>('/people', payload)
+  return data
+}
+
+export async function updatePeople(id: string, payload: UpdatePeoplePayload): Promise<People> {
+  const { data } = await api.put<People>(`/people/${id}`, payload)
+  return data
+}
+
+export async function deletePeople(id: string): Promise<void> {
+  await api.delete(`/people/${id}`)
+}
+
+// Scheduling types
+export interface Scheduling {
+  id: string
+  employeeId: string
+  employeeName: string
+  shiftType: 'morning' | 'afternoon' | 'night'
+  date: string
+  startTime: string
+  endTime: string
+  status: 'scheduled' | 'completed' | 'cancelled'
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateSchedulingPayload {
+  employeeId: string
+  employeeName: string
+  shiftType: 'morning' | 'afternoon' | 'night'
+  date: string
+  startTime: string
+  endTime: string
+  status?: 'scheduled' | 'completed' | 'cancelled'
+  notes?: string
+}
+
+export interface UpdateSchedulingPayload {
+  employeeId?: string
+  employeeName?: string
+  shiftType?: 'morning' | 'afternoon' | 'night'
+  date?: string
+  startTime?: string
+  endTime?: string
+  status?: 'scheduled' | 'completed' | 'cancelled'
+  notes?: string
+}
+
+// Scheduling API
+export async function getScheduling(): Promise<Scheduling[]> {
+  const { data } = await api.get<Scheduling[]>('/scheduling')
+  return data
+}
+
+export async function createScheduling(payload: CreateSchedulingPayload): Promise<Scheduling> {
+  const { data } = await api.post<Scheduling>('/scheduling', payload)
+  return data
+}
+
+export async function updateScheduling(id: string, payload: UpdateSchedulingPayload): Promise<Scheduling> {
+  const { data } = await api.put<Scheduling>(`/scheduling/${id}`, payload)
+  return data
+}
+
+export async function deleteScheduling(id: string): Promise<void> {
+  await api.delete(`/scheduling/${id}`)
+}

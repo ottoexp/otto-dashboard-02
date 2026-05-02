@@ -62,6 +62,33 @@ const AuthenticatedServicesLazyRouteImport = createFileRoute(
 const AuthenticatedCustomersLazyRouteImport = createFileRoute(
   '/_authenticated/customers',
 )()
+const AuthenticatedOperationalServiceLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/service',
+)()
+const AuthenticatedOperationalSchedulingLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/scheduling',
+)()
+const AuthenticatedOperationalPeopleLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/people',
+)()
+const AuthenticatedControllerTaxLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/tax',
+)()
+const AuthenticatedControllerLedgerLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/ledger',
+)()
+const AuthenticatedControllerCashLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/cash',
+)()
+const AuthenticatedControllerBankLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/bank',
+)()
+const AuthenticatedControllerAttendanceLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/attendance',
+)()
+const AuthenticatedControllerAdminLazyRouteImport = createFileRoute(
+  '/_authenticated/controller/admin',
+)()
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -215,6 +242,90 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOperationalServiceLazyRoute =
+  AuthenticatedOperationalServiceLazyRouteImport.update({
+    id: '/operational/service',
+    path: '/operational/service',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/service.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedOperationalSchedulingLazyRoute =
+  AuthenticatedOperationalSchedulingLazyRouteImport.update({
+    id: '/operational/scheduling',
+    path: '/operational/scheduling',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/scheduling.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedOperationalPeopleLazyRoute =
+  AuthenticatedOperationalPeopleLazyRouteImport.update({
+    id: '/operational/people',
+    path: '/operational/people',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/people.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedControllerTaxLazyRoute =
+  AuthenticatedControllerTaxLazyRouteImport.update({
+    id: '/controller/tax',
+    path: '/controller/tax',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/tax.lazy').then((d) => d.Route),
+  )
+const AuthenticatedControllerLedgerLazyRoute =
+  AuthenticatedControllerLedgerLazyRouteImport.update({
+    id: '/controller/ledger',
+    path: '/controller/ledger',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/ledger.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedControllerCashLazyRoute =
+  AuthenticatedControllerCashLazyRouteImport.update({
+    id: '/controller/cash',
+    path: '/controller/cash',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/cash.lazy').then((d) => d.Route),
+  )
+const AuthenticatedControllerBankLazyRoute =
+  AuthenticatedControllerBankLazyRouteImport.update({
+    id: '/controller/bank',
+    path: '/controller/bank',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/bank.lazy').then((d) => d.Route),
+  )
+const AuthenticatedControllerAttendanceLazyRoute =
+  AuthenticatedControllerAttendanceLazyRouteImport.update({
+    id: '/controller/attendance',
+    path: '/controller/attendance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/attendance.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedControllerAdminLazyRoute =
+  AuthenticatedControllerAdminLazyRouteImport.update({
+    id: '/controller/admin',
+    path: '/controller/admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/controller/admin.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const ClerkAuthenticatedUserManagementRoute =
   ClerkAuthenticatedUserManagementRouteImport.update({
     id: '/user-management',
@@ -323,6 +434,15 @@ export interface FileRoutesByFullPath {
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/controller/admin': typeof AuthenticatedControllerAdminLazyRoute
+  '/controller/attendance': typeof AuthenticatedControllerAttendanceLazyRoute
+  '/controller/bank': typeof AuthenticatedControllerBankLazyRoute
+  '/controller/cash': typeof AuthenticatedControllerCashLazyRoute
+  '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
+  '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
+  '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
+  '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/apps/': typeof AuthenticatedAppsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
@@ -364,6 +484,15 @@ export interface FileRoutesByTo {
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/controller/admin': typeof AuthenticatedControllerAdminLazyRoute
+  '/controller/attendance': typeof AuthenticatedControllerAttendanceLazyRoute
+  '/controller/bank': typeof AuthenticatedControllerBankLazyRoute
+  '/controller/cash': typeof AuthenticatedControllerCashLazyRoute
+  '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
+  '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
+  '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
+  '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
@@ -409,6 +538,15 @@ export interface FileRoutesById {
   '/clerk/(auth)/sign-in': typeof ClerkauthSignInRoute
   '/clerk/(auth)/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/_authenticated/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/_authenticated/controller/admin': typeof AuthenticatedControllerAdminLazyRoute
+  '/_authenticated/controller/attendance': typeof AuthenticatedControllerAttendanceLazyRoute
+  '/_authenticated/controller/bank': typeof AuthenticatedControllerBankLazyRoute
+  '/_authenticated/controller/cash': typeof AuthenticatedControllerCashLazyRoute
+  '/_authenticated/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
+  '/_authenticated/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/_authenticated/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
+  '/_authenticated/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
+  '/_authenticated/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
@@ -452,6 +590,15 @@ export interface FileRouteTypes {
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
+    | '/controller/admin'
+    | '/controller/attendance'
+    | '/controller/bank'
+    | '/controller/cash'
+    | '/controller/ledger'
+    | '/controller/tax'
+    | '/operational/people'
+    | '/operational/scheduling'
+    | '/operational/service'
     | '/admin/'
     | '/apps/'
     | '/chats/'
@@ -493,6 +640,15 @@ export interface FileRouteTypes {
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
+    | '/controller/admin'
+    | '/controller/attendance'
+    | '/controller/bank'
+    | '/controller/cash'
+    | '/controller/ledger'
+    | '/controller/tax'
+    | '/operational/people'
+    | '/operational/scheduling'
+    | '/operational/service'
     | '/admin'
     | '/apps'
     | '/chats'
@@ -537,6 +693,15 @@ export interface FileRouteTypes {
     | '/clerk/(auth)/sign-in'
     | '/clerk/(auth)/sign-up'
     | '/clerk/_authenticated/user-management'
+    | '/_authenticated/controller/admin'
+    | '/_authenticated/controller/attendance'
+    | '/_authenticated/controller/bank'
+    | '/_authenticated/controller/cash'
+    | '/_authenticated/controller/ledger'
+    | '/_authenticated/controller/tax'
+    | '/_authenticated/operational/people'
+    | '/_authenticated/operational/scheduling'
+    | '/_authenticated/operational/service'
     | '/_authenticated/admin/'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
@@ -766,6 +931,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/operational/service': {
+      id: '/_authenticated/operational/service'
+      path: '/operational/service'
+      fullPath: '/operational/service'
+      preLoaderRoute: typeof AuthenticatedOperationalServiceLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/operational/scheduling': {
+      id: '/_authenticated/operational/scheduling'
+      path: '/operational/scheduling'
+      fullPath: '/operational/scheduling'
+      preLoaderRoute: typeof AuthenticatedOperationalSchedulingLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/operational/people': {
+      id: '/_authenticated/operational/people'
+      path: '/operational/people'
+      fullPath: '/operational/people'
+      preLoaderRoute: typeof AuthenticatedOperationalPeopleLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/tax': {
+      id: '/_authenticated/controller/tax'
+      path: '/controller/tax'
+      fullPath: '/controller/tax'
+      preLoaderRoute: typeof AuthenticatedControllerTaxLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/ledger': {
+      id: '/_authenticated/controller/ledger'
+      path: '/controller/ledger'
+      fullPath: '/controller/ledger'
+      preLoaderRoute: typeof AuthenticatedControllerLedgerLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/cash': {
+      id: '/_authenticated/controller/cash'
+      path: '/controller/cash'
+      fullPath: '/controller/cash'
+      preLoaderRoute: typeof AuthenticatedControllerCashLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/bank': {
+      id: '/_authenticated/controller/bank'
+      path: '/controller/bank'
+      fullPath: '/controller/bank'
+      preLoaderRoute: typeof AuthenticatedControllerBankLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/attendance': {
+      id: '/_authenticated/controller/attendance'
+      path: '/controller/attendance'
+      fullPath: '/controller/attendance'
+      preLoaderRoute: typeof AuthenticatedControllerAttendanceLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/controller/admin': {
+      id: '/_authenticated/controller/admin'
+      path: '/controller/admin'
+      fullPath: '/controller/admin'
+      preLoaderRoute: typeof AuthenticatedControllerAdminLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/clerk/_authenticated/user-management': {
       id: '/clerk/_authenticated/user-management'
       path: '/user-management'
@@ -879,6 +1107,15 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsDisplayRoute: typeof AuthenticatedSettingsDisplayRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedUsersRolesRoute: typeof AuthenticatedUsersRolesRoute
+  AuthenticatedControllerAdminLazyRoute: typeof AuthenticatedControllerAdminLazyRoute
+  AuthenticatedControllerAttendanceLazyRoute: typeof AuthenticatedControllerAttendanceLazyRoute
+  AuthenticatedControllerBankLazyRoute: typeof AuthenticatedControllerBankLazyRoute
+  AuthenticatedControllerCashLazyRoute: typeof AuthenticatedControllerCashLazyRoute
+  AuthenticatedControllerLedgerLazyRoute: typeof AuthenticatedControllerLedgerLazyRoute
+  AuthenticatedControllerTaxLazyRoute: typeof AuthenticatedControllerTaxLazyRoute
+  AuthenticatedOperationalPeopleLazyRoute: typeof AuthenticatedOperationalPeopleLazyRoute
+  AuthenticatedOperationalSchedulingLazyRoute: typeof AuthenticatedOperationalSchedulingLazyRoute
+  AuthenticatedOperationalServiceLazyRoute: typeof AuthenticatedOperationalServiceLazyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
@@ -908,6 +1145,20 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsNotificationsRoute:
     AuthenticatedSettingsNotificationsRoute,
   AuthenticatedUsersRolesRoute: AuthenticatedUsersRolesRoute,
+  AuthenticatedControllerAdminLazyRoute: AuthenticatedControllerAdminLazyRoute,
+  AuthenticatedControllerAttendanceLazyRoute:
+    AuthenticatedControllerAttendanceLazyRoute,
+  AuthenticatedControllerBankLazyRoute: AuthenticatedControllerBankLazyRoute,
+  AuthenticatedControllerCashLazyRoute: AuthenticatedControllerCashLazyRoute,
+  AuthenticatedControllerLedgerLazyRoute:
+    AuthenticatedControllerLedgerLazyRoute,
+  AuthenticatedControllerTaxLazyRoute: AuthenticatedControllerTaxLazyRoute,
+  AuthenticatedOperationalPeopleLazyRoute:
+    AuthenticatedOperationalPeopleLazyRoute,
+  AuthenticatedOperationalSchedulingLazyRoute:
+    AuthenticatedOperationalSchedulingLazyRoute,
+  AuthenticatedOperationalServiceLazyRoute:
+    AuthenticatedOperationalServiceLazyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
