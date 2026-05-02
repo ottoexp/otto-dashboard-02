@@ -34,7 +34,6 @@ export const sidebarData: SidebarData = {
         {
           title: 'Controller',
           icon: Shield,
-          permission: { resource: 'controller', action: 'read' },
           items: [
             {
               title: 'Attendance',
@@ -71,7 +70,6 @@ export const sidebarData: SidebarData = {
         {
           title: 'Operational',
           icon: ServicesIcon,
-          permission: { resource: 'operational', action: 'read' },
           items: [
             {
               title: 'Customer',
