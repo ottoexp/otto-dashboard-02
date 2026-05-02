@@ -19,10 +19,12 @@ import { SignOutDialog } from '@/components/sign-out-dialog'
 import { useTheme } from '@/context/theme-provider'
 import { Check, Moon, Sun, Monitor, Palette, Users, CreditCard, Settings, Building } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/stores/auth-store'
 
 export function ProfileDropdown() {
   const [open, setOpen] = useDialogState()
   const { theme, setTheme } = useTheme()
+  const { user } = useAuthStore().auth
 
   return (
     <>
@@ -31,17 +33,22 @@ export function ProfileDropdown() {
           <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
             <Avatar className='h-8 w-8'>
               <AvatarImage src='/avatars/01.png' alt='@shadcn' />
-              <AvatarFallback>SN</AvatarFallback>
+              <AvatarFallback>{user?.name?.slice(0, 2).toUpperCase() || 'SN'}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>Admin Otto</p>
+              <p className='text-sm leading-none font-medium'>{user?.name || 'User'}</p>
               <p className='text-xs leading-none text-muted-foreground'>
-                admin@otto.my.id
+                {user?.email || 'user@example.com'}
               </p>
+              {user?.cabang && (
+                <p className='text-xs leading-none text-muted-foreground'>
+                  {user.cabang.charAt(0).toUpperCase() + user.cabang.slice(1)}
+                </p>
+              )}
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

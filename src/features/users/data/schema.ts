@@ -15,6 +15,14 @@ const userRoleSchema = z.union([
   z.literal('manager'),
 ])
 
+const userCabangSchema = z.union([
+  z.literal('pusat'),
+  z.literal('kapuk'),
+  z.literal('cakung'),
+  z.literal('cikarang'),
+  z.null(),
+])
+
 export const userSchema = z.object({
   id: z.string(),
   firstName: z.string(),
@@ -24,6 +32,7 @@ export const userSchema = z.object({
   phoneNumber: z.string().nullable(),
   status: userStatusSchema,
   role: userRoleSchema,
+  cabang: userCabangSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
 })

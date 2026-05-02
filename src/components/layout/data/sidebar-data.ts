@@ -2,9 +2,9 @@ import {
   Command,
   User,
   Package2,
-  Users as TeamIcon,
+  Users as PeopleIcon,
   Wrench as ServicesIcon,
-  CreditCard as TransactionsIcon,
+  CreditCard as AccountingIcon,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -26,41 +26,36 @@ export const sidebarData: SidebarData = {
       title: '',
       items: [
         {
-          title: 'Customer',
-          url: '/customers',
-          icon: User,
-          permission: { resource: 'customers', action: 'read' },
-        },
-        {
           title: 'Sales',
-          url: '/services/request',
           icon: ServicesIcon,
           permission: { resource: 'sales', action: 'read' },
-        },
-        {
-          title: 'Inventory',
-          url: '/inventory/request',
-          icon: Package2,
-          permission: { resource: 'inventory', action: 'read' },
-        },
-        {
-          title: 'Team',
-          icon: TeamIcon,
-          permission: { resource: 'team', action: 'read' },
           items: [
             {
-              title: 'Schedule',
-              url: '/team/schedule',
-            },
-            {
-              title: 'Absensi',
-              url: '/team/absensi',
+              title: 'Customer',
+              url: '/customers',
+              icon: User,
+              permission: { resource: 'customers', action: 'read' },
             },
           ],
         },
         {
-          title: 'Finance',
-          icon: TransactionsIcon,
+          title: 'Inventory',
+          icon: Package2,
+          permission: { resource: 'inventory', action: 'read' },
+          items: [
+            {
+              title: 'Inventory Items',
+              url: '/inventory',
+            },
+            {
+              title: 'Service Inventory',
+              url: '/service-inventory',
+            },
+          ],
+        },
+        {
+          title: 'Accounting',
+          icon: AccountingIcon,
           permission: { resource: 'finance', action: 'read' },
           items: [
             {
@@ -76,12 +71,23 @@ export const sidebarData: SidebarData = {
               url: '/transactions/ledger',
             },
             {
-              title: 'Report',
-              url: '/transactions/report',
-            },
-            {
               title: 'Pajak',
               url: '/transactions/pajak',
+            },
+          ],
+        },
+        {
+          title: 'People',
+          icon: PeopleIcon,
+          permission: { resource: 'team', action: 'read' },
+          items: [
+            {
+              title: 'Schedule',
+              url: '/team/schedule',
+            },
+            {
+              title: 'Absensi',
+              url: '/team/absensi',
             },
           ],
         },

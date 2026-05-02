@@ -33,6 +33,7 @@ export interface AuthResponse {
     email: string
     name: string
     role: string
+    cabang: string | null
   }
   accessToken: string
   refreshToken: string
@@ -43,6 +44,7 @@ export interface AuthUser {
   email: string
   name: string
   role: string
+  cabang: string | null
 }
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
@@ -81,6 +83,7 @@ export interface User {
   phoneNumber: string | null
   status: 'active' | 'inactive' | 'invited' | 'suspended'
   role: 'superadmin' | 'admin' | 'cashier' | 'manager'
+  cabang: 'pusat' | 'kapuk' | 'cakung' | 'cikarang' | null
   createdAt: string
   updatedAt: string
 }
@@ -104,6 +107,7 @@ export interface CreateUserPayload {
   password: string
   status?: 'active' | 'inactive' | 'invited' | 'suspended'
   role?: 'superadmin' | 'admin' | 'cashier' | 'manager'
+  cabang?: 'pusat' | 'kapuk' | 'cakung' | 'cikarang' | null
 }
 
 export interface UpdateUserPayload {
@@ -115,6 +119,7 @@ export interface UpdateUserPayload {
   password?: string
   status?: 'active' | 'inactive' | 'invited' | 'suspended'
   role?: 'superadmin' | 'admin' | 'cashier' | 'manager'
+  cabang?: 'pusat' | 'kapuk' | 'cakung' | 'cikarang' | null
 }
 
 export interface GetUsersParams {
@@ -474,4 +479,80 @@ export async function createTransaction(payload: CreateTransactionPayload): Prom
 
 export async function deleteTransaction(id: string): Promise<void> {
   await api.delete(`/transactions/${id}`)
+}
+
+// Service Inventory types
+export interface ServiceWithInventory {
+  id: string
+  name: string
+  description: string | null
+  price: number
+  duration: number
+  status: 'active' | 'inactive'
+  inventoryItems?: ServiceInventoryItemWithDetails[]
+  totalInventoryCost?: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ServiceInventoryItemWithDetails {
+  id: string
+  serviceId: string
+  inventoryId: string
+  inventoryName: string
+  inventoryCode: string
+  stock: number
+  cost: number
+  quantity: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface StockAlertWithDetails {
+  id: string
+  inventoryId: string
+  inventoryName: string
+  inventoryCode: string
+  currentStock: number
+  minStock: number
+  alertThreshold: number
+  isActive: boolean
+  lastAlerted: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// Service Inventory API
+export async function getServicesWithInventory(): Promise<ServiceWithInventory[]> {
+  const { data } = await api.get<ServiceWithInventory[]>('/service-inventory/services-with-inventory')
+  return data
+}
+
+export async function addServiceInventoryItem(serviceId: string, inventoryId: string, quantity: number): Promise<ServiceInventoryItemWithDetails> {
+  const { data } = await api.post<ServiceInventoryItemWithDetails>(`/service-inventory/services/${serviceId}/inventory`, {
+    inventoryId,
+    quantity
+  })
+  return data
+}
+
+export async function updateServiceInventoryItem(id: string, quantity: number): Promise<ServiceInventoryItemWithDetails> {
+  const { data } = await api.put<ServiceInventoryItemWithDetails>(`/service-inventory/service-inventory/${id}`, {
+    quantity
+  })
+  return data
+}
+
+export async function removeServiceInventoryItem(id: string): Promise<void> {
+  await api.delete(`/service-inventory/service-inventory/${id}`)
+}
+
+export async function getStockAlerts(): Promise<StockAlertWithDetails[]> {
+  const { data } = await api.get<StockAlertWithDetails[]>('/service-inventory/stock-alerts')
+  return data
+}
+
+export async function updateInventory(id: string, payload: UpdateInventoryPayload): Promise<Inventory> {
+  const { data } = await api.put<Inventory>(`/inventory/${id}`, payload)
+  return data
 }

@@ -63,6 +63,7 @@ export function UserAuthForm({
         email: response.user.email,
         name: response.user.name,
         role: response.user.role,
+        cabang: response.user.cabang || null,
       })
       auth.setAccessToken(response.accessToken)
       auth.setRefreshToken(response.refreshToken)

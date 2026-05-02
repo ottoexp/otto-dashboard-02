@@ -132,6 +132,22 @@ export const usersColumns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'cabang',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Cabang' />
+    ),
+    cell: ({ row }) => {
+      const cabang = row.getValue('cabang') as string | null
+      return (
+        <div className='capitalize'>
+          {cabang || '-'}
+        </div>
+      )
+    },
+    enableSorting: false,
+    enableHiding: true,
+  },
+  {
     id: 'actions',
     cell: DataTableRowActions,
   },

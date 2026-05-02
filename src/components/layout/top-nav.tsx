@@ -38,13 +38,22 @@ function NavItem({ item, onClose }: { item: any; onClose?: () => void }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {item.items.map((subItem: any) => (
-            <DropdownMenuItem key={subItem.title} asChild>
-              <Link to={subItem.url} className="cursor-pointer">
-                {subItem.title}
-              </Link>
-            </DropdownMenuItem>
-          ))}
+          {item.items.map((subItem: any) => {
+            if (!subItem.url) {
+              return (
+                <DropdownMenuItem key={subItem.title} disabled>
+                  {subItem.title}
+                </DropdownMenuItem>
+              )
+            }
+            return (
+              <DropdownMenuItem key={subItem.title} asChild>
+                <Link to={subItem.url} className="cursor-pointer">
+                  {subItem.title}
+                </Link>
+              </DropdownMenuItem>
+            )
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     )
@@ -81,6 +90,7 @@ function MobileNavItem({ item, onClose }: { item: any; onClose: () => void }) {
             variant="ghost"
             className="w-full justify-start"
             asChild
+            disabled={subItem.disabled}
             onClick={onClose}
           >
             <Link to={subItem.url}>{subItem.title}</Link>
@@ -111,6 +121,14 @@ export function TopNav() {
   return (
     <nav className="border-b bg-background">
       <div className="flex h-16 items-center px-4 gap-4">
+        {/* Left - Logo */}
+        <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="Otto ERP" className="h-8 w-auto" />
+            <span className="font-bold text-lg hidden sm:inline">Otto ERP</span>
+          </Link>
+        </div>
+
         {/* Center - Navigation Menu (Desktop) */}
         {!isMobile && (
           <div className="flex items-center gap-1 flex-1">

@@ -9,6 +9,7 @@ interface AuthUser {
   email: string
   name: string
   role: string
+  cabang: string | null
 }
 
 interface AuthState {

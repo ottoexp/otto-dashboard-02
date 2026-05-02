@@ -29,9 +29,12 @@ import { Route as ClerkauthRouteRouteImport } from './routes/clerk/(auth)/route'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedTasksIndexRouteImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedServiceInventoryIndexRouteImport } from './routes/_authenticated/service-inventory/index'
+import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory/index'
 import { Route as AuthenticatedHelpCenterIndexRouteImport } from './routes/_authenticated/help-center/index'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedAppsIndexRouteImport } from './routes/_authenticated/apps/index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as ClerkAuthenticatedUserManagementRouteImport } from './routes/clerk/_authenticated/user-management'
 import { Route as ClerkauthSignUpRouteImport } from './routes/clerk/(auth)/sign-up'
 import { Route as ClerkauthSignInRouteImport } from './routes/clerk/(auth)/sign-in'
@@ -41,6 +44,11 @@ import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_auth
 import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_authenticated/settings/appearance'
 import { Route as AuthenticatedSettingsAccountRouteImport } from './routes/_authenticated/settings/account'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedInventoryReqIndexRouteImport } from './routes/_authenticated/inventory/req/index'
+import { Route as AuthenticatedInventoryReptIndexRouteImport } from './routes/_authenticated/inventory/rept/index'
+import { Route as AuthenticatedInventoryProgIndexRouteImport } from './routes/_authenticated/inventory/prog/index'
+import { Route as AuthenticatedInventoryApprIndexRouteImport } from './routes/_authenticated/inventory/appr/index'
+import { Route as AuthenticatedInventoryAdminIndexRouteImport } from './routes/_authenticated/inventory/admin/index'
 
 const AuthenticatedTransactionsLazyRouteImport = createFileRoute(
   '/_authenticated/transactions',
@@ -50,9 +58,6 @@ const AuthenticatedTeamLazyRouteImport = createFileRoute(
 )()
 const AuthenticatedServicesLazyRouteImport = createFileRoute(
   '/_authenticated/services',
-)()
-const AuthenticatedInventoryLazyRouteImport = createFileRoute(
-  '/_authenticated/inventory',
 )()
 const AuthenticatedCustomersLazyRouteImport = createFileRoute(
   '/_authenticated/customers',
@@ -94,14 +99,6 @@ const AuthenticatedServicesLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/services.lazy').then((d) => d.Route),
-  )
-const AuthenticatedInventoryLazyRoute =
-  AuthenticatedInventoryLazyRouteImport.update({
-    id: '/inventory',
-    path: '/inventory',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/inventory.lazy').then((d) => d.Route),
   )
 const AuthenticatedCustomersLazyRoute =
   AuthenticatedCustomersLazyRouteImport.update({
@@ -185,6 +182,18 @@ const AuthenticatedSettingsIndexRoute =
     path: '/settings/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedServiceInventoryIndexRoute =
+  AuthenticatedServiceInventoryIndexRouteImport.update({
+    id: '/service-inventory/',
+    path: '/service-inventory/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventoryIndexRoute =
+  AuthenticatedInventoryIndexRouteImport.update({
+    id: '/inventory/',
+    path: '/inventory/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHelpCenterIndexRoute =
   AuthenticatedHelpCenterIndexRouteImport.update({
     id: '/help-center/',
@@ -199,6 +208,11 @@ const AuthenticatedChatsIndexRoute = AuthenticatedChatsIndexRouteImport.update({
 const AuthenticatedAppsIndexRoute = AuthenticatedAppsIndexRouteImport.update({
   id: '/apps/',
   path: '/apps/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ClerkAuthenticatedUserManagementRoute =
@@ -252,6 +266,36 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedInventoryReqIndexRoute =
+  AuthenticatedInventoryReqIndexRouteImport.update({
+    id: '/inventory/req/',
+    path: '/inventory/req/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventoryReptIndexRoute =
+  AuthenticatedInventoryReptIndexRouteImport.update({
+    id: '/inventory/rept/',
+    path: '/inventory/rept/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventoryProgIndexRoute =
+  AuthenticatedInventoryProgIndexRouteImport.update({
+    id: '/inventory/prog/',
+    path: '/inventory/prog/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventoryApprIndexRoute =
+  AuthenticatedInventoryApprIndexRouteImport.update({
+    id: '/inventory/appr/',
+    path: '/inventory/appr/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventoryAdminIndexRoute =
+  AuthenticatedInventoryAdminIndexRouteImport.update({
+    id: '/inventory/admin/',
+    path: '/inventory/admin/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -267,7 +311,6 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/customers': typeof AuthenticatedCustomersLazyRoute
-  '/inventory': typeof AuthenticatedInventoryLazyRoute
   '/services': typeof AuthenticatedServicesLazyRoute
   '/team': typeof AuthenticatedTeamLazyRoute
   '/transactions': typeof AuthenticatedTransactionsLazyRoute
@@ -280,12 +323,20 @@ export interface FileRoutesByFullPath {
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/apps/': typeof AuthenticatedAppsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
   '/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/service-inventory/': typeof AuthenticatedServiceInventoryIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/inventory/admin/': typeof AuthenticatedInventoryAdminIndexRoute
+  '/inventory/appr/': typeof AuthenticatedInventoryApprIndexRoute
+  '/inventory/prog/': typeof AuthenticatedInventoryProgIndexRoute
+  '/inventory/rept/': typeof AuthenticatedInventoryReptIndexRoute
+  '/inventory/req/': typeof AuthenticatedInventoryReqIndexRoute
 }
 export interface FileRoutesByTo {
   '/clerk': typeof ClerkAuthenticatedRouteRouteWithChildren
@@ -300,7 +351,6 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/customers': typeof AuthenticatedCustomersLazyRoute
-  '/inventory': typeof AuthenticatedInventoryLazyRoute
   '/services': typeof AuthenticatedServicesLazyRoute
   '/team': typeof AuthenticatedTeamLazyRoute
   '/transactions': typeof AuthenticatedTransactionsLazyRoute
@@ -314,12 +364,20 @@ export interface FileRoutesByTo {
   '/clerk/sign-in': typeof ClerkauthSignInRoute
   '/clerk/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
+  '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/service-inventory': typeof AuthenticatedServiceInventoryIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/inventory/admin': typeof AuthenticatedInventoryAdminIndexRoute
+  '/inventory/appr': typeof AuthenticatedInventoryApprIndexRoute
+  '/inventory/prog': typeof AuthenticatedInventoryProgIndexRoute
+  '/inventory/rept': typeof AuthenticatedInventoryReptIndexRoute
+  '/inventory/req': typeof AuthenticatedInventoryReqIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -338,7 +396,6 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/customers': typeof AuthenticatedCustomersLazyRoute
-  '/_authenticated/inventory': typeof AuthenticatedInventoryLazyRoute
   '/_authenticated/services': typeof AuthenticatedServicesLazyRoute
   '/_authenticated/team': typeof AuthenticatedTeamLazyRoute
   '/_authenticated/transactions': typeof AuthenticatedTransactionsLazyRoute
@@ -352,12 +409,20 @@ export interface FileRoutesById {
   '/clerk/(auth)/sign-in': typeof ClerkauthSignInRoute
   '/clerk/(auth)/sign-up': typeof ClerkauthSignUpRoute
   '/clerk/_authenticated/user-management': typeof ClerkAuthenticatedUserManagementRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
+  '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/_authenticated/service-inventory/': typeof AuthenticatedServiceInventoryIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/inventory/admin/': typeof AuthenticatedInventoryAdminIndexRoute
+  '/_authenticated/inventory/appr/': typeof AuthenticatedInventoryApprIndexRoute
+  '/_authenticated/inventory/prog/': typeof AuthenticatedInventoryProgIndexRoute
+  '/_authenticated/inventory/rept/': typeof AuthenticatedInventoryReptIndexRoute
+  '/_authenticated/inventory/req/': typeof AuthenticatedInventoryReqIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -375,7 +440,6 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/customers'
-    | '/inventory'
     | '/services'
     | '/team'
     | '/transactions'
@@ -388,12 +452,20 @@ export interface FileRouteTypes {
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
+    | '/admin/'
     | '/apps/'
     | '/chats/'
     | '/help-center/'
+    | '/inventory/'
+    | '/service-inventory/'
     | '/settings/'
     | '/tasks/'
     | '/users/'
+    | '/inventory/admin/'
+    | '/inventory/appr/'
+    | '/inventory/prog/'
+    | '/inventory/rept/'
+    | '/inventory/req/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/clerk'
@@ -408,7 +480,6 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/customers'
-    | '/inventory'
     | '/services'
     | '/team'
     | '/transactions'
@@ -422,12 +493,20 @@ export interface FileRouteTypes {
     | '/clerk/sign-in'
     | '/clerk/sign-up'
     | '/clerk/user-management'
+    | '/admin'
     | '/apps'
     | '/chats'
     | '/help-center'
+    | '/inventory'
+    | '/service-inventory'
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/inventory/admin'
+    | '/inventory/appr'
+    | '/inventory/prog'
+    | '/inventory/rept'
+    | '/inventory/req'
   id:
     | '__root__'
     | '/_authenticated'
@@ -445,7 +524,6 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/customers'
-    | '/_authenticated/inventory'
     | '/_authenticated/services'
     | '/_authenticated/team'
     | '/_authenticated/transactions'
@@ -459,12 +537,20 @@ export interface FileRouteTypes {
     | '/clerk/(auth)/sign-in'
     | '/clerk/(auth)/sign-up'
     | '/clerk/_authenticated/user-management'
+    | '/_authenticated/admin/'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/inventory/'
+    | '/_authenticated/service-inventory/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/inventory/admin/'
+    | '/_authenticated/inventory/appr/'
+    | '/_authenticated/inventory/prog/'
+    | '/_authenticated/inventory/rept/'
+    | '/_authenticated/inventory/req/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -524,13 +610,6 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof AuthenticatedServicesLazyRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/inventory': {
-      id: '/_authenticated/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof AuthenticatedInventoryLazyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/customers': {
@@ -645,6 +724,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/service-inventory/': {
+      id: '/_authenticated/service-inventory/'
+      path: '/service-inventory'
+      fullPath: '/service-inventory/'
+      preLoaderRoute: typeof AuthenticatedServiceInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory/': {
+      id: '/_authenticated/inventory/'
+      path: '/inventory'
+      fullPath: '/inventory/'
+      preLoaderRoute: typeof AuthenticatedInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
@@ -664,6 +757,13 @@ declare module '@tanstack/react-router' {
       path: '/apps'
       fullPath: '/apps/'
       preLoaderRoute: typeof AuthenticatedAppsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/clerk/_authenticated/user-management': {
@@ -729,12 +829,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/inventory/req/': {
+      id: '/_authenticated/inventory/req/'
+      path: '/inventory/req'
+      fullPath: '/inventory/req/'
+      preLoaderRoute: typeof AuthenticatedInventoryReqIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory/rept/': {
+      id: '/_authenticated/inventory/rept/'
+      path: '/inventory/rept'
+      fullPath: '/inventory/rept/'
+      preLoaderRoute: typeof AuthenticatedInventoryReptIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory/prog/': {
+      id: '/_authenticated/inventory/prog/'
+      path: '/inventory/prog'
+      fullPath: '/inventory/prog/'
+      preLoaderRoute: typeof AuthenticatedInventoryProgIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory/appr/': {
+      id: '/_authenticated/inventory/appr/'
+      path: '/inventory/appr'
+      fullPath: '/inventory/appr/'
+      preLoaderRoute: typeof AuthenticatedInventoryApprIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventory/admin/': {
+      id: '/_authenticated/inventory/admin/'
+      path: '/inventory/admin'
+      fullPath: '/inventory/admin/'
+      preLoaderRoute: typeof AuthenticatedInventoryAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCustomersLazyRoute: typeof AuthenticatedCustomersLazyRoute
-  AuthenticatedInventoryLazyRoute: typeof AuthenticatedInventoryLazyRoute
   AuthenticatedServicesLazyRoute: typeof AuthenticatedServicesLazyRoute
   AuthenticatedTeamLazyRoute: typeof AuthenticatedTeamLazyRoute
   AuthenticatedTransactionsLazyRoute: typeof AuthenticatedTransactionsLazyRoute
@@ -745,17 +879,24 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsDisplayRoute: typeof AuthenticatedSettingsDisplayRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedUsersRolesRoute: typeof AuthenticatedUsersRolesRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
+  AuthenticatedInventoryIndexRoute: typeof AuthenticatedInventoryIndexRoute
+  AuthenticatedServiceInventoryIndexRoute: typeof AuthenticatedServiceInventoryIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
+  AuthenticatedInventoryAdminIndexRoute: typeof AuthenticatedInventoryAdminIndexRoute
+  AuthenticatedInventoryApprIndexRoute: typeof AuthenticatedInventoryApprIndexRoute
+  AuthenticatedInventoryProgIndexRoute: typeof AuthenticatedInventoryProgIndexRoute
+  AuthenticatedInventoryReptIndexRoute: typeof AuthenticatedInventoryReptIndexRoute
+  AuthenticatedInventoryReqIndexRoute: typeof AuthenticatedInventoryReqIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCustomersLazyRoute: AuthenticatedCustomersLazyRoute,
-  AuthenticatedInventoryLazyRoute: AuthenticatedInventoryLazyRoute,
   AuthenticatedServicesLazyRoute: AuthenticatedServicesLazyRoute,
   AuthenticatedTeamLazyRoute: AuthenticatedTeamLazyRoute,
   AuthenticatedTransactionsLazyRoute: AuthenticatedTransactionsLazyRoute,
@@ -767,12 +908,21 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsNotificationsRoute:
     AuthenticatedSettingsNotificationsRoute,
   AuthenticatedUsersRolesRoute: AuthenticatedUsersRolesRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
+  AuthenticatedInventoryIndexRoute: AuthenticatedInventoryIndexRoute,
+  AuthenticatedServiceInventoryIndexRoute:
+    AuthenticatedServiceInventoryIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
   AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
+  AuthenticatedInventoryAdminIndexRoute: AuthenticatedInventoryAdminIndexRoute,
+  AuthenticatedInventoryApprIndexRoute: AuthenticatedInventoryApprIndexRoute,
+  AuthenticatedInventoryProgIndexRoute: AuthenticatedInventoryProgIndexRoute,
+  AuthenticatedInventoryReptIndexRoute: AuthenticatedInventoryReptIndexRoute,
+  AuthenticatedInventoryReqIndexRoute: AuthenticatedInventoryReqIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
