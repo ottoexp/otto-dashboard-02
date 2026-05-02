@@ -29,20 +29,24 @@ export const sidebarData: SidebarData = {
           title: 'Customer',
           url: '/customers',
           icon: User,
+          permission: { resource: 'customers', action: 'read' },
         },
         {
           title: 'Sales',
           url: '/services/request',
           icon: ServicesIcon,
+          permission: { resource: 'sales', action: 'read' },
         },
         {
           title: 'Inventory',
           url: '/inventory/request',
           icon: Package2,
+          permission: { resource: 'inventory', action: 'read' },
         },
         {
           title: 'Team',
           icon: TeamIcon,
+          permission: { resource: 'team', action: 'read' },
           items: [
             {
               title: 'Schedule',
@@ -57,6 +61,7 @@ export const sidebarData: SidebarData = {
         {
           title: 'Finance',
           icon: TransactionsIcon,
+          permission: { resource: 'finance', action: 'read' },
           items: [
             {
               title: 'Cash',
