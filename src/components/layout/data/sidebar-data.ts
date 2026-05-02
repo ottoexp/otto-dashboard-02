@@ -5,6 +5,13 @@ import {
   Users as PeopleIcon,
   Wrench as ServicesIcon,
   CreditCard as AccountingIcon,
+  Calendar,
+  DollarSign,
+  Building2,
+  BookOpen,
+  Receipt,
+  Shield,
+  Settings as AdminIcon,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -26,68 +33,84 @@ export const sidebarData: SidebarData = {
       title: '',
       items: [
         {
-          title: 'Sales',
-          icon: ServicesIcon,
-          permission: { resource: 'sales', action: 'read' },
+          title: 'Controller',
+          icon: Shield,
+          permission: { resource: 'controller', action: 'read' },
           items: [
             {
-              title: 'Customer',
-              url: '/customers',
-              icon: User,
-              permission: { resource: 'customers', action: 'read' },
+              title: 'Attendance',
+              url: '/controller/attendance',
+              icon: Calendar,
             },
-          ],
-        },
-        {
-          title: 'Inventory',
-          icon: Package2,
-          permission: { resource: 'inventory', action: 'read' },
-          items: [
-            {
-              title: 'Inventory Items',
-              url: '/inventory',
-            },
-            {
-              title: 'Service Inventory',
-              url: '/service-inventory',
-            },
-          ],
-        },
-        {
-          title: 'Accounting',
-          icon: AccountingIcon,
-          permission: { resource: 'finance', action: 'read' },
-          items: [
             {
               title: 'Cash',
-              url: '/transactions/cash',
+              url: '/controller/cash',
+              icon: DollarSign,
             },
             {
               title: 'Bank',
-              url: '/transactions/bank',
+              url: '/controller/bank',
+              icon: Building2,
             },
             {
               title: 'Ledger',
-              url: '/transactions/ledger',
+              url: '/controller/ledger',
+              icon: BookOpen,
             },
             {
-              title: 'Pajak',
-              url: '/transactions/pajak',
+              title: 'Tax',
+              url: '/controller/tax',
+              icon: Receipt,
+            },
+            {
+              title: 'Admin',
+              url: '/controller/admin',
+              icon: AdminIcon,
             },
           ],
         },
         {
-          title: 'People',
-          icon: PeopleIcon,
-          permission: { resource: 'team', action: 'read' },
+          title: 'Operational',
+          icon: ServicesIcon,
+          permission: { resource: 'operational', action: 'read' },
           items: [
             {
-              title: 'Schedule',
-              url: '/team/schedule',
+              title: 'Customer',
+              url: '/operational/customer',
+              icon: User,
+              permission: { resource: 'customers', action: 'read' },
             },
             {
-              title: 'Absensi',
-              url: '/team/absensi',
+              title: 'Service',
+              url: '/operational/service',
+              icon: ServicesIcon,
+            },
+            {
+              title: 'Inventory',
+              url: '/operational/inventory',
+              icon: Package2,
+              permission: { resource: 'inventory', action: 'read' },
+              items: [
+                {
+                  title: 'Inventory Items',
+                  url: '/operational/inventory',
+                },
+                {
+                  title: 'Service Inventory',
+                  url: '/operational/service-inventory',
+                },
+              ],
+            },
+            {
+              title: 'People',
+              url: '/operational/people',
+              icon: PeopleIcon,
+              permission: { resource: 'team', action: 'read' },
+            },
+            {
+              title: 'Scheduling',
+              url: '/operational/scheduling',
+              icon: Calendar,
             },
           ],
         },
