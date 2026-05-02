@@ -2,7 +2,6 @@ import { Outlet } from '@tanstack/react-router'
 import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { useLocation } from '@tanstack/react-router'
 
 const sidebarNavItems = [
