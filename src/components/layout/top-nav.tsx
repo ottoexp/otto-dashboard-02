@@ -15,10 +15,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { sidebarData } from './data/sidebar-data'
-import { TeamSwitcherSimple } from './team-switcher-simple'
 import { ProfileDropdown } from '@/components/profile-dropdown'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
 import { ChevronDown, Menu } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -29,11 +26,6 @@ export function TopNav() {
   return (
     <nav className="border-b bg-background">
       <div className="flex h-16 items-center px-4 gap-4">
-        {/* Left - Logo & Team Switcher */}
-        <div className="flex items-center gap-4">
-          <TeamSwitcherSimple teams={sidebarData.teams} />
-        </div>
-
         {/* Center - Navigation Menu (Desktop) */}
         {!isMobile && (
           <div className="flex items-center gap-1 flex-1">
@@ -127,10 +119,8 @@ export function TopNav() {
           </Sheet>
         )}
 
-        {/* Right - Theme, Settings, Profile */}
-        <div className="flex items-center gap-2">
-          <ThemeSwitch />
-          <ConfigDrawer />
+        {/* Right - Profile Only */}
+        <div className="ml-auto">
           <ProfileDropdown />
         </div>
       </div>
