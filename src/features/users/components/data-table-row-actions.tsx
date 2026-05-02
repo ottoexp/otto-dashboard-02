@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { type User } from '../data/schema'
 import { useUsers } from './users-provider'
 import { useToggleUserStatusMutation } from '../data/users-query'
+import { useHasPermission } from '@/hooks/use-permissions'
 
 type DataTableRowActionsProps = {
   row: Row<User>
@@ -22,6 +23,8 @@ type DataTableRowActionsProps = {
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
   const toggleStatus = useToggleUserStatusMutation()
+  const { hasPermission: canUpdate } = useHasPermission('users', 'update')
+  const { hasPermission: canDelete } = useHasPermission('users', 'delete')
   const user = row.original
   const isActive = user.status === 'active'
 
@@ -50,39 +53,45 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-[160px]'>
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('edit')
-            }}
-          >
-            Edit
-            <DropdownMenuShortcut>
-              <UserPen size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={handleToggleStatus}
-            disabled={toggleStatus.isPending}
-          >
-            {isActive ? 'Deactivate' : 'Activate'}
-            <DropdownMenuShortcut>
-              {isActive ? <PowerOff size={16} /> : <Power size={16} />}
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('delete')
-            }}
-            className='text-red-500!'
-          >
-            Delete
-            <DropdownMenuShortcut>
-              <Trash2 size={16} />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {canUpdate && (
+            <>
+              <DropdownMenuItem
+                onClick={() => {
+                  setCurrentRow(row.original)
+                  setOpen('edit')
+                }}
+              >
+                Edit
+                <DropdownMenuShortcut>
+                  <UserPen size={16} />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleToggleStatus}
+                disabled={toggleStatus.isPending}
+              >
+                {isActive ? 'Deactivate' : 'Activate'}
+                <DropdownMenuShortcut>
+                  {isActive ? <PowerOff size={16} /> : <Power size={16} />}
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              {canDelete && <DropdownMenuSeparator />}
+            </>
+          )}
+          {canDelete && (
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(row.original)
+                setOpen('delete')
+              }}
+              className='text-red-500!'
+            >
+              Delete
+              <DropdownMenuShortcut>
+                <Trash2 size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
