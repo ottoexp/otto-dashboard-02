@@ -14,7 +14,7 @@ export function usePermissions() {
   return useQuery({
     queryKey: ['permissions'],
     queryFn: async () => {
-      const response = await api.get<Permission[]>('/roles/permissions')
+      const response = await api.get<Permission[]>('/me/permissions')
       return response.data
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
