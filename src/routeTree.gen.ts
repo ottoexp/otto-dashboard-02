@@ -71,6 +71,9 @@ const AuthenticatedOperationalSchedulingLazyRouteImport = createFileRoute(
 const AuthenticatedOperationalPeopleLazyRouteImport = createFileRoute(
   '/_authenticated/operational/people',
 )()
+const AuthenticatedOperationalCustomerLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/customer',
+)()
 const AuthenticatedControllerTaxLazyRouteImport = createFileRoute(
   '/_authenticated/controller/tax',
 )()
@@ -272,6 +275,16 @@ const AuthenticatedOperationalPeopleLazyRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedOperationalCustomerLazyRoute =
+  AuthenticatedOperationalCustomerLazyRouteImport.update({
+    id: '/operational/customer',
+    path: '/operational/customer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/customer.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const AuthenticatedControllerTaxLazyRoute =
   AuthenticatedControllerTaxLazyRouteImport.update({
     id: '/controller/tax',
@@ -440,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/controller/cash': typeof AuthenticatedControllerCashLazyRoute
   '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -490,6 +504,7 @@ export interface FileRoutesByTo {
   '/controller/cash': typeof AuthenticatedControllerCashLazyRoute
   '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -544,6 +559,7 @@ export interface FileRoutesById {
   '/_authenticated/controller/cash': typeof AuthenticatedControllerCashLazyRoute
   '/_authenticated/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/_authenticated/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
+  '/_authenticated/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
   '/_authenticated/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/_authenticated/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/_authenticated/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -596,6 +612,7 @@ export interface FileRouteTypes {
     | '/controller/cash'
     | '/controller/ledger'
     | '/controller/tax'
+    | '/operational/customer'
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
@@ -646,6 +663,7 @@ export interface FileRouteTypes {
     | '/controller/cash'
     | '/controller/ledger'
     | '/controller/tax'
+    | '/operational/customer'
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
@@ -699,6 +717,7 @@ export interface FileRouteTypes {
     | '/_authenticated/controller/cash'
     | '/_authenticated/controller/ledger'
     | '/_authenticated/controller/tax'
+    | '/_authenticated/operational/customer'
     | '/_authenticated/operational/people'
     | '/_authenticated/operational/scheduling'
     | '/_authenticated/operational/service'
@@ -952,6 +971,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOperationalPeopleLazyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/operational/customer': {
+      id: '/_authenticated/operational/customer'
+      path: '/operational/customer'
+      fullPath: '/operational/customer'
+      preLoaderRoute: typeof AuthenticatedOperationalCustomerLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/controller/tax': {
       id: '/_authenticated/controller/tax'
       path: '/controller/tax'
@@ -1113,6 +1139,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedControllerCashLazyRoute: typeof AuthenticatedControllerCashLazyRoute
   AuthenticatedControllerLedgerLazyRoute: typeof AuthenticatedControllerLedgerLazyRoute
   AuthenticatedControllerTaxLazyRoute: typeof AuthenticatedControllerTaxLazyRoute
+  AuthenticatedOperationalCustomerLazyRoute: typeof AuthenticatedOperationalCustomerLazyRoute
   AuthenticatedOperationalPeopleLazyRoute: typeof AuthenticatedOperationalPeopleLazyRoute
   AuthenticatedOperationalSchedulingLazyRoute: typeof AuthenticatedOperationalSchedulingLazyRoute
   AuthenticatedOperationalServiceLazyRoute: typeof AuthenticatedOperationalServiceLazyRoute
@@ -1153,6 +1180,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedControllerLedgerLazyRoute:
     AuthenticatedControllerLedgerLazyRoute,
   AuthenticatedControllerTaxLazyRoute: AuthenticatedControllerTaxLazyRoute,
+  AuthenticatedOperationalCustomerLazyRoute:
+    AuthenticatedOperationalCustomerLazyRoute,
   AuthenticatedOperationalPeopleLazyRoute:
     AuthenticatedOperationalPeopleLazyRoute,
   AuthenticatedOperationalSchedulingLazyRoute:
