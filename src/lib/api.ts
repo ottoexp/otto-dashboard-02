@@ -906,22 +906,22 @@ export interface UpdatePeoplePayload {
 
 // People API
 export async function getPeople(): Promise<People[]> {
-  const { data } = await api.get<People[]>('/people')
-  return data
+  const { data } = await api.get<{ data: People[]; pagination: any }>('/operational/people')
+  return data.data
 }
 
 export async function createPeople(payload: CreatePeoplePayload): Promise<People> {
-  const { data } = await api.post<People>('/people', payload)
+  const { data } = await api.post<People>('/operational/people', payload)
   return data
 }
 
 export async function updatePeople(id: string, payload: UpdatePeoplePayload): Promise<People> {
-  const { data } = await api.put<People>(`/people/${id}`, payload)
+  const { data } = await api.put<People>(`/operational/people/${id}`, payload)
   return data
 }
 
 export async function deletePeople(id: string): Promise<void> {
-  await api.delete(`/people/${id}`)
+  await api.delete(`/operational/people/${id}`)
 }
 
 // Scheduling types
