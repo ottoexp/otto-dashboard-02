@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -10,12 +11,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Edit, Trash2 } from 'lucide-react'
 import { getPeople, createPeople, updatePeople, deletePeople, type People, type CreatePeoplePayload, type UpdatePeoplePayload } from '@/lib/api'
 import { logError } from '@/lib/error-tracking'
+import { useAuthStore } from '@/stores/auth-store'
+import { api } from '@/lib/api'
 
 export const Route = createLazyFileRoute('/_authenticated/operational/people')({
   component: PeoplePage,
 })
 
 function PeoplePage() {
+  const navigate = useNavigate()
+  const { auth } = useAuthStore()
   const queryClient = useQueryClient()
   const [openModal, setOpenModal] = useState(false)
   const [editingItem, setEditingItem] = useState<People | null>(null)
@@ -28,6 +33,30 @@ function PeoplePage() {
     joinDate: new Date().toISOString().split('T')[0],
     status: 'active'
   })
+
+  useEffect(() => {
+    if (!auth.accessToken) {
+      navigate({ to: '/sign-in', search: { redirect: '/operational/people' } })
+      return
+    }
+
+    api.get<{ resource: string; action: string }[]>('/me/permissions')
+      .then(response => {
+        console.log('Permissions response:', response.data)
+        const permissions = response.data
+        const hasPermission = permissions?.some(
+          (p) => p.resource === 'team' && p.action === 'read'
+        )
+        console.log('Has team:read permission:', hasPermission)
+        if (!hasPermission) {
+          navigate({ to: '/403' })
+        }
+      })
+      .catch((error) => {
+        console.error('Permissions error:', error)
+        navigate({ to: '/403' })
+      })
+  }, [auth.accessToken, navigate])
 
   const { data: people, isLoading } = useQuery({
     queryKey: ['people'],
