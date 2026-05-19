@@ -108,6 +108,11 @@ export const sidebarData: SidebarData = {
               url: '/operational/scheduling',
               icon: Calendar,
             },
+            {
+              title: 'SPK',
+              url: '/operational/spk',
+              icon: ServicesIcon,
+            },
           ],
         },
       ],

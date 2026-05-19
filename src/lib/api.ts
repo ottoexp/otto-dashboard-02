@@ -980,3 +980,141 @@ export async function updateScheduling(id: string, payload: UpdateSchedulingPayl
 export async function deleteScheduling(id: string): Promise<void> {
   await api.delete(`/scheduling/${id}`)
 }
+
+// SPK types matching backend API
+export interface SPK {
+  id: string
+  unit: string
+  merek_type: string | null
+  nama: string
+  divisi: 'bongkar' | 'dempul' | 'epoxy' | 'cat' | 'poles' | 'pasang'
+  workorder_number: string
+  tanggal: string
+  start_time: string | null
+  end_time: string | null
+  status: 'pending' | 'in_progress' | 'waiting_tool' | 'waiting_part' | 'waiting_survey' | 'completed'
+  notes: string | null
+  created_by: string | null
+  created_at: string
+  updated_at: string
+  jasa?: SPKJasa[]
+  first_name?: string
+  last_name?: string
+}
+
+export interface SPKJasa {
+  id: string
+  spk_id: string
+  nomor: string
+  panel: string | null
+  qty: string
+  harga: string
+  total: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateSPKPayload {
+  unit: string
+  merek_type?: string
+  nama: string
+  divisi: 'bongkar' | 'dempul' | 'epoxy' | 'cat' | 'poles' | 'pasang'
+  workorder_number: string
+  tanggal: string
+  notes?: string
+}
+
+export interface UpdateSPKPayload {
+  unit?: string
+  merek_type?: string
+  nama?: string
+  divisi?: 'bongkar' | 'dempul' | 'epoxy' | 'cat' | 'poles' | 'pasang'
+  workorder_number?: string
+  tanggal?: string
+  notes?: string
+  status?: 'pending' | 'in_progress' | 'waiting_tool' | 'waiting_part' | 'waiting_survey' | 'completed'
+}
+
+export interface CreateSPKJasaPayload {
+  nomor: string
+  panel?: string
+  qty: number
+  harga: number
+}
+
+export interface UpdateSPKJasaPayload {
+  nomor?: string
+  panel?: string
+  qty?: number
+  harga?: number
+}
+
+export interface SPKDailyReport {
+  data: SPK[]
+  summary: {
+    total: number
+    byStatus: Record<string, number>
+    byDivisi: Record<string, number>
+  }
+}
+
+// SPK API
+export async function getSPK(params?: { divisi?: string; status?: string; tanggal?: string }): Promise<SPK[]> {
+  const queryParams = new URLSearchParams()
+  if (params?.divisi) queryParams.append('divisi', params.divisi)
+  if (params?.status) queryParams.append('status', params.status)
+  if (params?.tanggal) queryParams.append('tanggal', params.tanggal)
+  
+  const url = `/service/spk${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+  const { data } = await api.get<{ data: SPK[] }>(url)
+  return data.data
+}
+
+export async function getSPKById(id: string): Promise<SPK> {
+  const { data } = await api.get<{ data: SPK }>(`/service/spk/${id}`)
+  return data.data
+}
+
+export async function createSPK(payload: CreateSPKPayload): Promise<SPK> {
+  const { data } = await api.post<{ data: SPK }>('/service/spk', payload)
+  return data.data
+}
+
+export async function updateSPK(id: string, payload: UpdateSPKPayload): Promise<SPK> {
+  const { data } = await api.put<{ data: SPK }>(`/service/spk/${id}`, payload)
+  return data.data
+}
+
+export async function deleteSPK(id: string): Promise<void> {
+  await api.delete(`/service/spk/${id}`)
+}
+
+export async function startSPK(id: string): Promise<SPK> {
+  const { data } = await api.post<{ data: SPK }>(`/service/spk/${id}/start`)
+  return data.data
+}
+
+export async function stopSPK(id: string): Promise<SPK> {
+  const { data } = await api.post<{ data: SPK }>(`/service/spk/${id}/stop`)
+  return data.data
+}
+
+export async function addSPKJasa(id: string, payload: CreateSPKJasaPayload): Promise<SPKJasa> {
+  const { data } = await api.post<{ data: SPKJasa }>(`/service/spk/${id}/jasa`, payload)
+  return data.data
+}
+
+export async function updateSPKJasa(id: string, jasaId: string, payload: UpdateSPKJasaPayload): Promise<SPKJasa> {
+  const { data } = await api.put<{ data: SPKJasa }>(`/service/spk/${id}/jasa/${jasaId}`, payload)
+  return data.data
+}
+
+export async function deleteSPKJasa(id: string, jasaId: string): Promise<void> {
+  await api.delete(`/service/spk/${id}/jasa/${jasaId}`)
+}
+
+export async function getSPKDailyReport(date?: string): Promise<SPKDailyReport> {
+  const queryParams = date ? `?date=${date}` : ''
+  const { data } = await api.get<SPKDailyReport>(`/service/spk/report/daily${queryParams}`)
+  return data
+}

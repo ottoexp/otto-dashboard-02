@@ -62,6 +62,9 @@ const AuthenticatedServicesLazyRouteImport = createFileRoute(
 const AuthenticatedCustomersLazyRouteImport = createFileRoute(
   '/_authenticated/customers',
 )()
+const AuthenticatedOperationalSpkLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/spk',
+)()
 const AuthenticatedOperationalServiceLazyRouteImport = createFileRoute(
   '/_authenticated/operational/service',
 )()
@@ -245,6 +248,14 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOperationalSpkLazyRoute =
+  AuthenticatedOperationalSpkLazyRouteImport.update({
+    id: '/operational/spk',
+    path: '/operational/spk',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/spk.lazy').then((d) => d.Route),
+  )
 const AuthenticatedOperationalServiceLazyRoute =
   AuthenticatedOperationalServiceLazyRouteImport.update({
     id: '/operational/service',
@@ -457,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
+  '/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/apps/': typeof AuthenticatedAppsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
@@ -508,6 +520,7 @@ export interface FileRoutesByTo {
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
+  '/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
@@ -563,6 +576,7 @@ export interface FileRoutesById {
   '/_authenticated/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/_authenticated/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/_authenticated/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
+  '/_authenticated/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
@@ -616,6 +630,7 @@ export interface FileRouteTypes {
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
+    | '/operational/spk'
     | '/admin/'
     | '/apps/'
     | '/chats/'
@@ -667,6 +682,7 @@ export interface FileRouteTypes {
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
+    | '/operational/spk'
     | '/admin'
     | '/apps'
     | '/chats'
@@ -721,6 +737,7 @@ export interface FileRouteTypes {
     | '/_authenticated/operational/people'
     | '/_authenticated/operational/scheduling'
     | '/_authenticated/operational/service'
+    | '/_authenticated/operational/spk'
     | '/_authenticated/admin/'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
@@ -950,6 +967,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/operational/spk': {
+      id: '/_authenticated/operational/spk'
+      path: '/operational/spk'
+      fullPath: '/operational/spk'
+      preLoaderRoute: typeof AuthenticatedOperationalSpkLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/operational/service': {
       id: '/_authenticated/operational/service'
       path: '/operational/service'
@@ -1143,6 +1167,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOperationalPeopleLazyRoute: typeof AuthenticatedOperationalPeopleLazyRoute
   AuthenticatedOperationalSchedulingLazyRoute: typeof AuthenticatedOperationalSchedulingLazyRoute
   AuthenticatedOperationalServiceLazyRoute: typeof AuthenticatedOperationalServiceLazyRoute
+  AuthenticatedOperationalSpkLazyRoute: typeof AuthenticatedOperationalSpkLazyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
@@ -1188,6 +1213,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedOperationalSchedulingLazyRoute,
   AuthenticatedOperationalServiceLazyRoute:
     AuthenticatedOperationalServiceLazyRoute,
+  AuthenticatedOperationalSpkLazyRoute: AuthenticatedOperationalSpkLazyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
