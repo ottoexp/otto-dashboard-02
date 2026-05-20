@@ -1,333 +1,178 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { getScheduling, type Scheduling } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Plus, Edit, Trash2 } from 'lucide-react'
-import { getScheduling, createScheduling, updateScheduling, deleteScheduling, type Scheduling, type CreateSchedulingPayload, type UpdateSchedulingPayload } from '@/lib/api'
-import { logError } from '@/lib/error-tracking'
+import { cn } from '@/lib/utils'
+import { ChevronLeft, ChevronRight, Sun, Sunset, Moon } from 'lucide-react'
 
 export const Route = createLazyFileRoute('/_authenticated/operational/scheduling')({
-  component: SchedulingPage,
+  component: FlowPage,
 })
 
-function SchedulingPage() {
-  const queryClient = useQueryClient()
-  const [openModal, setOpenModal] = useState(false)
-  const [editingItem, setEditingItem] = useState<Scheduling | null>(null)
-  const [formData, setFormData] = useState<CreateSchedulingPayload>({
-    employeeId: '',
-    employeeName: '',
-    shiftType: 'morning',
-    date: new Date().toISOString().split('T')[0],
-    startTime: '08:00',
-    endTime: '17:00',
-    status: 'scheduled',
-    notes: ''
-  })
+const SHIFT_CONFIG = {
+  morning:   { label: 'Pagi',   icon: Sun,     color: 'bg-yellow-50 border-yellow-200', badge: 'bg-yellow-100 text-yellow-700' },
+  afternoon: { label: 'Siang',  icon: Sunset,  color: 'bg-orange-50 border-orange-200', badge: 'bg-orange-100 text-orange-700' },
+  night:     { label: 'Malam',  icon: Moon,    color: 'bg-indigo-50 border-indigo-200', badge: 'bg-indigo-100 text-indigo-700' },
+}
 
-  const { data: scheduling, isLoading } = useQuery({
+const STATUS_BADGE: Record<string, string> = {
+  scheduled: 'bg-blue-100 text-blue-700',
+  completed: 'bg-green-100 text-green-700',
+  cancelled: 'bg-red-100 text-red-700',
+}
+
+function getWeekDates(anchor: Date): Date[] {
+  const day = anchor.getDay()
+  const monday = new Date(anchor)
+  monday.setDate(anchor.getDate() - ((day + 6) % 7))
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    return d
+  })
+}
+
+function fmt(d: Date) {
+  return d.toISOString().slice(0, 10)
+}
+
+const DAY_NAMES = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+
+function FlowPage() {
+  const [anchor, setAnchor] = useState(new Date())
+  const week = getWeekDates(anchor)
+  const today = fmt(new Date())
+
+  const { data: schedules = [], isLoading } = useQuery({
     queryKey: ['scheduling'],
-    queryFn: getScheduling
+    queryFn: getScheduling,
   })
 
-  const createMutation = useMutation({
-    mutationFn: createScheduling,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scheduling'] })
-      setOpenModal(false)
-      resetForm()
-    },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/scheduling',
-        error: err.message,
-        stack: err.stack,
-        body: formData
-      })
-    }
-  })
+  const byDate = schedules.reduce<Record<string, Scheduling[]>>((acc, s) => {
+    if (!acc[s.date]) acc[s.date] = []
+    acc[s.date].push(s)
+    return acc
+  }, {})
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateSchedulingPayload }) =>
-      updateScheduling(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scheduling'] })
-      setOpenModal(false)
-      resetForm()
-      setEditingItem(null)
-    },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/scheduling',
-        error: err.message,
-        stack: err.stack,
-        body: formData
-      })
-    }
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteScheduling,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['scheduling'] })
-    },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/scheduling',
-        error: err.message,
-        stack: err.stack
-      })
-    }
-  })
-
-  const resetForm = () => {
-    setFormData({
-      employeeId: '',
-      employeeName: '',
-      shiftType: 'morning',
-      date: new Date().toISOString().split('T')[0],
-      startTime: '08:00',
-      endTime: '17:00',
-      status: 'scheduled',
-      notes: ''
-    })
+  const prevWeek = () => {
+    const d = new Date(anchor)
+    d.setDate(d.getDate() - 7)
+    setAnchor(d)
   }
-
-  const handleEdit = (item: Scheduling) => {
-    setEditingItem(item)
-    setFormData({
-      employeeId: item.employeeId || '',
-      employeeName: item.employeeName || '',
-      shiftType: item.shiftType || 'morning',
-      date: item.date || new Date().toISOString().split('T')[0],
-      startTime: item.startTime || '08:00',
-      endTime: item.endTime || '17:00',
-      status: item.status || 'scheduled',
-      notes: item.notes || ''
-    })
-    setOpenModal(true)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, payload: formData })
-    } else {
-      createMutation.mutate(formData)
-    }
+  const nextWeek = () => {
+    const d = new Date(anchor)
+    d.setDate(d.getDate() + 7)
+    setAnchor(d)
   }
 
   return (
-    <>
-      <div className='flex flex-wrap items-end justify-between gap-2 mb-6'>
+    <div className='flex flex-col gap-4'>
+      {/* Header */}
+      <div className='flex items-center justify-between'>
         <div>
-          <h2 className='text-2xl font-bold tracking-tight'>Jadwal Kerja</h2>
-          <p className='text-muted-foreground'>
-            Kelola jadwal shift karyawan.
-          </p>
+          <h2 className='text-2xl font-bold'>Flow</h2>
+          <p className='text-sm text-muted-foreground'>Jadwal shift mingguan</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Dialog open={openModal} onOpenChange={(open) => {
-            setOpenModal(open)
-            if (!open) {
-              resetForm()
-              setEditingItem(null)
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingItem(null)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah Jadwal
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingItem ? 'Edit Jadwal' : 'Tambah Jadwal Baru'}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="employeeId">ID Karyawan</Label>
-                    <Input
-                      id="employeeId"
-                      value={formData.employeeId}
-                      onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="employeeName">Nama Karyawan</Label>
-                    <Input
-                      id="employeeName"
-                      value={formData.employeeName}
-                      onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="shiftType">Tipe Shift</Label>
-                    <Select value={formData.shiftType} onValueChange={(value: any) => setFormData({ ...formData, shiftType: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="morning">Pagi</SelectItem>
-                        <SelectItem value="afternoon">Siang</SelectItem>
-                        <SelectItem value="night">Malam</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="date">Tanggal</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startTime">Waktu Mulai</Label>
-                    <Input
-                      id="startTime"
-                      type="time"
-                      value={formData.startTime}
-                      onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="endTime">Waktu Selesai</Label>
-                    <Input
-                      id="endTime"
-                      type="time"
-                      value={formData.endTime}
-                      onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="scheduled">Scheduled</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-</Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Catatan</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="secondary" onClick={() => {
-                    setOpenModal(false)
-                    resetForm()
-                    setEditingItem(null)
-                  }}>
-                    Batal
-                  </Button>
-                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                    {(createMutation.isPending || updateMutation.isPending) ? 'Menyimpan...' : 'Simpan'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+        <div className='flex items-center gap-2'>
+          <Button variant='outline' size='icon' className='h-8 w-8' onClick={prevWeek}>
+            <ChevronLeft size={16} />
+          </Button>
+          <span className='text-sm font-medium min-w-32 text-center'>
+            {week[0].toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} –{' '}
+            {week[6].toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
+          <Button variant='outline' size='icon' className='h-8 w-8' onClick={nextWeek}>
+            <ChevronRight size={16} />
+          </Button>
+          <Button variant='outline' size='sm' onClick={() => setAnchor(new Date())}>
+            Hari Ini
+          </Button>
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID Karyawan</TableHead>
-            <TableHead>Nama Karyawan</TableHead>
-            <TableHead>Tipe Shift</TableHead>
-            <TableHead>Tanggal</TableHead>
-            <TableHead>Waktu Mulai</TableHead>
-            <TableHead>Waktu Selesai</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-24">Aksi</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                Memuat data...
-              </TableCell>
-            </TableRow>
-          ) : !scheduling || scheduling.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                Belum ada data jadwal
-              </TableCell>
-            </TableRow>
-          ) : (
-            scheduling.map((item: Scheduling) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.employeeId}</TableCell>
-                <TableCell>{item.employeeName}</TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    item.shiftType === 'morning' ? 'bg-yellow-100 text-yellow-800' :
-                    item.shiftType === 'afternoon' ? 'bg-blue-100 text-blue-800' :
-                    'bg-purple-100 text-purple-800'
-                  }`}>
-                    {item.shiftType}
-                  </span>
-                </TableCell>
-                <TableCell>{item.date}</TableCell>
-                <TableCell>{item.startTime}</TableCell>
-                <TableCell>{item.endTime}</TableCell>
-                <TableCell>{item.status}</TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
-                      onClick={() => handleEdit(item)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-red-500"
-                      onClick={() => deleteMutation.mutate(item.id)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </>
+      {isLoading ? (
+        <div className='text-center py-12 text-muted-foreground text-sm'>Memuat data...</div>
+      ) : (
+        <div className='grid grid-cols-7 gap-2'>
+          {week.map((date, idx) => {
+            const dateStr = fmt(date)
+            const isToday = dateStr === today
+            const daySchedules = byDate[dateStr] || []
+
+            return (
+              <div key={dateStr} className={cn('rounded-lg border p-2', isToday ? 'border-primary bg-primary/5' : 'border-border bg-background')}>
+                {/* Day header */}
+                <div className='text-center mb-2'>
+                  <p className='text-xs text-muted-foreground'>{DAY_NAMES[idx]}</p>
+                  <p className={cn('text-lg font-bold leading-tight', isToday && 'text-primary')}>
+                    {date.getDate()}
+                  </p>
+                </div>
+
+                {/* Shifts */}
+                <div className='space-y-1'>
+                  {(['morning', 'afternoon', 'night'] as const).map(shift => {
+                    const shiftItems = daySchedules.filter(s => s.shiftType === shift)
+                    const cfg = SHIFT_CONFIG[shift]
+                    const Icon = cfg.icon
+
+                    if (shiftItems.length === 0) {
+                      return (
+                        <div key={shift} className={cn('rounded border p-1.5 opacity-40', cfg.color)}>
+                          <div className='flex items-center gap-1'>
+                            <Icon size={10} />
+                            <span className='text-xs'>{cfg.label}</span>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div key={shift} className={cn('rounded border p-1.5', cfg.color)}>
+                        <div className='flex items-center gap-1 mb-1'>
+                          <Icon size={10} />
+                          <span className='text-xs font-medium'>{cfg.label}</span>
+                          <span className='ml-auto text-xs text-muted-foreground'>{shiftItems.length}</span>
+                        </div>
+                        {shiftItems.slice(0, 3).map(s => (
+                          <div key={s.id} className='flex items-center gap-1 py-0.5'>
+                            <span className='text-xs truncate flex-1'>{s.employeeName}</span>
+                            <Badge className={cn('text-xs px-1 py-0 h-4', STATUS_BADGE[s.status] || '')}>
+                              {s.status === 'scheduled' ? '●' : s.status === 'completed' ? '✓' : '✕'}
+                            </Badge>
+                          </div>
+                        ))}
+                        {shiftItems.length > 3 && (
+                          <p className='text-xs text-muted-foreground'>+{shiftItems.length - 3} lagi</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {daySchedules.length === 0 && (
+                  <p className='text-xs text-center text-muted-foreground mt-1'>—</p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Legend */}
+      <div className='flex gap-3 text-xs text-muted-foreground'>
+        {Object.entries(SHIFT_CONFIG).map(([k, v]) => (
+          <span key={k} className='flex items-center gap-1'>
+            <v.icon size={12} />
+            {v.label}
+          </span>
+        ))}
+        <span className='ml-4'>● Terjadwal</span>
+        <span>✓ Selesai</span>
+        <span>✕ Batal</span>
+      </div>
+    </div>
   )
 }

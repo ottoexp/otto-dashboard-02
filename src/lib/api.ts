@@ -1095,6 +1095,11 @@ export async function updateSPK(id: string, payload: UpdateSPKPayload): Promise<
   return data.data
 }
 
+export async function updateSPKStatus(id: string, status: SPK['status']): Promise<SPK> {
+  const { data } = await api.patch<{ data: SPK }>(`/service/spk/${id}/status`, { status })
+  return data.data
+}
+
 export async function deleteSPK(id: string): Promise<void> {
   await api.delete(`/service/spk/${id}`)
 }
