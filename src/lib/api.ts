@@ -83,7 +83,9 @@ export interface User {
   email: string
   phoneNumber: string | null
   status: 'active' | 'inactive' | 'invited' | 'suspended'
-  role: 'superadmin' | 'admin' | 'cashier' | 'manager'
+  role?: 'superadmin' | 'admin' | 'cashier' | 'manager'
+  roleName?: string | null
+  legacyRole?: string | null
   cabang: 'pusat' | 'kapuk' | 'cakung' | 'cikarang' | null
   createdAt: string
   updatedAt: string

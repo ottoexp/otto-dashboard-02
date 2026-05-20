@@ -106,7 +106,7 @@ export function UsersActionDialog({
           username: currentRow.username,
           email: currentRow.email,
           phoneNumber: currentRow.phoneNumber || '',
-          role: currentRow.role,
+          role: (currentRow as any).roleName || (currentRow as any).legacyRole || '',
           status: currentRow.status,
           cabang: currentRow.cabang || 'pusat',
           password: '',

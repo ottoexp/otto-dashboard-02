@@ -13,7 +13,9 @@ const userRoleSchema = z.union([
   z.literal('admin'),
   z.literal('cashier'),
   z.literal('manager'),
-])
+  z.null(),
+  z.undefined(),
+]).optional()
 
 const userCabangSchema = z.union([
   z.literal('pusat'),
@@ -32,6 +34,8 @@ export const userSchema = z.object({
   phoneNumber: z.string().nullable(),
   status: userStatusSchema,
   role: userRoleSchema,
+  roleName: z.string().nullable().optional(),
+  legacyRole: z.string().nullable().optional(),
   cabang: userCabangSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
