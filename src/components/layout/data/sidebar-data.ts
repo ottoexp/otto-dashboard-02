@@ -2,7 +2,6 @@ import {
   Command,
   User,
   Package2,
-  Users as PeopleIcon,
   Wrench as ServicesIcon,
   Calendar,
   DollarSign,
