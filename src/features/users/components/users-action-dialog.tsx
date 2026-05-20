@@ -28,6 +28,13 @@ import { roles, userStatuses } from '../data/data'
 import { type User } from '../data/schema'
 import { useCreateUserMutation, useUpdateUserMutation } from '../data/users-query'
 
+const CABANG_OPTIONS = [
+  { label: 'Pusat', value: 'pusat' },
+  { label: 'Kapuk', value: 'kapuk' },
+  { label: 'Cakung', value: 'cakung' },
+  { label: 'Cikarang', value: 'cikarang' },
+]
+
 const formSchema = z
   .object({
     firstName: z.string().min(1, 'First Name is required.'),
@@ -38,6 +45,7 @@ const formSchema = z
     password: z.string().transform((pwd) => pwd.trim()),
     role: z.string().min(1, 'Role is required.'),
     status: z.string().min(1, 'Status is required.'),
+    cabang: z.string().min(1, 'Cabang is required.'),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
   })
@@ -100,6 +108,7 @@ export function UsersActionDialog({
           phoneNumber: currentRow.phoneNumber || '',
           role: currentRow.role,
           status: currentRow.status,
+          cabang: currentRow.cabang || 'pusat',
           password: '',
           confirmPassword: '',
           isEdit,
@@ -111,6 +120,7 @@ export function UsersActionDialog({
           email: '',
           role: '',
           status: 'active',
+          cabang: 'pusat',
           phoneNumber: '',
           password: '',
           confirmPassword: '',
@@ -159,6 +169,7 @@ export function UsersActionDialog({
           password: values.password,
           role: values.role as 'superadmin' | 'admin' | 'cashier' | 'manager',
           status: values.status as 'active' | 'inactive' | 'invited' | 'suspended',
+          cabang: values.cabang as 'pusat' | 'kapuk' | 'cakung' | 'cikarang',
         })
         toast.success('User created successfully')
       }
@@ -327,6 +338,23 @@ export function UsersActionDialog({
                         label,
                         value,
                       }))}
+                    />
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='cabang'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end'>Cabang</FormLabel>
+                    <SelectDropdown
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                      placeholder='Pilih cabang'
+                      className='col-span-4'
+                      items={CABANG_OPTIONS}
                     />
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
