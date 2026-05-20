@@ -1,96 +1,63 @@
 import {
-  Command,
   User,
   Package2,
   Wrench as ServicesIcon,
   Calendar,
-  DollarSign,
-  Shield,
+  ClipboardList,
   Settings as AdminIcon,
+  Users as AbsensiIcon,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
-    name: 'satnaing',
-    email: 'satnaingdev@gmail.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: '',
+    email: '',
+    avatar: '',
   },
-  teams: [
-    {
-      name: 'WEP',
-      logo: Command,
-      plan: 'Vite + ShadcnUI',
-    },
-  ],
+  teams: [],
   navGroups: [
     {
       title: '',
       items: [
         {
-          title: 'Controller',
-          icon: Shield,
-          items: [
-            {
-              title: 'Attendance',
-              url: '/controller/attendance',
-              icon: Calendar,
-            },
-            {
-              title: 'Cash',
-              url: '/controller/cash',
-              icon: DollarSign,
-            },
-            {
-              title: 'Admin',
-              url: '/controller/admin',
-              icon: AdminIcon,
-            },
-          ],
+          title: 'Absensi',
+          url: '/controller/attendance',
+          icon: AbsensiIcon,
         },
         {
-          title: 'Operational',
+          title: 'Customer',
+          url: '/operational/customer',
+          icon: User,
+          permission: { resource: 'customers', action: 'read' },
+        },
+        {
+          title: 'Service',
+          url: '/operational/service',
           icon: ServicesIcon,
-          items: [
-            {
-              title: 'Customer',
-              url: '/operational/customer',
-              icon: User,
-              permission: { resource: 'customers', action: 'read' },
-            },
-            {
-              title: 'Service',
-              url: '/operational/service',
-              icon: ServicesIcon,
-            },
-            {
-              title: 'Inventory',
-              icon: Package2,
-              permission: { resource: 'inventory', action: 'read' },
-              items: [
-                {
-                  title: 'Inventory Items',
-                  url: '/operational/inventory',
-                },
-                {
-                  title: 'Service Inventory',
-                  url: '/operational/service-inventory',
-                },
-              ],
-            },
-            {
-              title: 'Scheduling',
-              url: '/operational/scheduling',
-              icon: Calendar,
-            },
-            {
-              title: 'SPK',
-              url: '/operational/spk',
-              icon: ServicesIcon,
-            },
-          ],
+        },
+        {
+          title: 'Inventory',
+          url: '/operational/inventory',
+          icon: Package2,
+          permission: { resource: 'inventory', action: 'read' },
+        },
+        {
+          title: 'Scheduling',
+          url: '/operational/scheduling',
+          icon: Calendar,
+        },
+        {
+          title: 'Workorder',
+          url: '/operational/spk',
+          icon: ClipboardList,
+        },
+        {
+          title: 'Admin',
+          url: '/controller/admin',
+          icon: AdminIcon,
         },
       ],
     },
-   ],
+  ],
 }
