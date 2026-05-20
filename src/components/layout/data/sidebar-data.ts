@@ -1,12 +1,11 @@
 import {
   User,
   Package2,
-  Wrench,
+  Calendar,
   ClipboardList,
   Settings as AdminIcon,
-  Users,
-  GitBranch,
-  Hammer,
+  Users as PersonnelIcon,
+  CalendarCheck,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -22,6 +21,11 @@ export const sidebarData: SidebarData = {
       title: '',
       items: [
         {
+          title: 'Attendance',
+          url: '/controller/attendance',
+          icon: CalendarCheck,
+        },
+        {
           title: 'Order',
           url: '/operational/spk',
           icon: ClipboardList,
@@ -29,35 +33,27 @@ export const sidebarData: SidebarData = {
         {
           title: 'Flow',
           url: '/operational/scheduling',
-          icon: GitBranch,
+          icon: Calendar,
         },
         {
           title: 'Inventory',
+          url: '/operational/inventory',
           icon: Package2,
-          items: [
-            {
-              title: 'Material',
-              url: '/operational/inventory/material',
-            },
-            {
-              title: 'Tools',
-              url: '/operational/inventory/tools',
-            },
-          ],
+        },
+        {
+          title: 'Customer',
+          url: '/operational/customer',
+          icon: User,
+        },
+        {
+          title: 'Personnel',
+          url: '/operational/people',
+          icon: PersonnelIcon,
         },
         {
           title: 'Admin',
+          url: '/controller/admin',
           icon: AdminIcon,
-          items: [
-            {
-              title: 'Customer',
-              url: '/operational/customer',
-            },
-            {
-              title: 'Personnel',
-              url: '/operational/people',
-            },
-          ],
         },
       ],
     },

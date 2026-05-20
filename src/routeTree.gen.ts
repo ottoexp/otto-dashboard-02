@@ -74,6 +74,9 @@ const AuthenticatedOperationalSchedulingLazyRouteImport = createFileRoute(
 const AuthenticatedOperationalPeopleLazyRouteImport = createFileRoute(
   '/_authenticated/operational/people',
 )()
+const AuthenticatedOperationalInventoryLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/inventory',
+)()
 const AuthenticatedOperationalCustomerLazyRouteImport = createFileRoute(
   '/_authenticated/operational/customer',
 )()
@@ -95,6 +98,11 @@ const AuthenticatedControllerAttendanceLazyRouteImport = createFileRoute(
 const AuthenticatedControllerAdminLazyRouteImport = createFileRoute(
   '/_authenticated/controller/admin',
 )()
+const AuthenticatedOperationalInventoryToolsLazyRouteImport = createFileRoute(
+  '/_authenticated/operational/inventory/tools',
+)()
+const AuthenticatedOperationalInventoryMaterialLazyRouteImport =
+  createFileRoute('/_authenticated/operational/inventory/material')()
 
 const ClerkRouteRoute = ClerkRouteRouteImport.update({
   id: '/clerk',
@@ -286,6 +294,16 @@ const AuthenticatedOperationalPeopleLazyRoute =
       (d) => d.Route,
     ),
   )
+const AuthenticatedOperationalInventoryLazyRoute =
+  AuthenticatedOperationalInventoryLazyRouteImport.update({
+    id: '/operational/inventory',
+    path: '/operational/inventory',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/inventory.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const AuthenticatedOperationalCustomerLazyRoute =
   AuthenticatedOperationalCustomerLazyRouteImport.update({
     id: '/operational/customer',
@@ -431,6 +449,26 @@ const AuthenticatedInventoryAdminIndexRoute =
     path: '/inventory/admin/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedOperationalInventoryToolsLazyRoute =
+  AuthenticatedOperationalInventoryToolsLazyRouteImport.update({
+    id: '/tools',
+    path: '/tools',
+    getParentRoute: () => AuthenticatedOperationalInventoryLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/inventory.tools.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedOperationalInventoryMaterialLazyRoute =
+  AuthenticatedOperationalInventoryMaterialLazyRouteImport.update({
+    id: '/material',
+    path: '/material',
+    getParentRoute: () => AuthenticatedOperationalInventoryLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/operational/inventory.material.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -465,6 +503,7 @@ export interface FileRoutesByFullPath {
   '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
   '/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
+  '/operational/inventory': typeof AuthenticatedOperationalInventoryLazyRouteWithChildren
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -478,6 +517,8 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/tasks/': typeof AuthenticatedTasksIndexRoute
   '/users/': typeof AuthenticatedUsersIndexRoute
+  '/operational/inventory/material': typeof AuthenticatedOperationalInventoryMaterialLazyRoute
+  '/operational/inventory/tools': typeof AuthenticatedOperationalInventoryToolsLazyRoute
   '/inventory/admin/': typeof AuthenticatedInventoryAdminIndexRoute
   '/inventory/appr/': typeof AuthenticatedInventoryApprIndexRoute
   '/inventory/prog/': typeof AuthenticatedInventoryProgIndexRoute
@@ -517,6 +558,7 @@ export interface FileRoutesByTo {
   '/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
   '/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
+  '/operational/inventory': typeof AuthenticatedOperationalInventoryLazyRouteWithChildren
   '/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -530,6 +572,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/tasks': typeof AuthenticatedTasksIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
+  '/operational/inventory/material': typeof AuthenticatedOperationalInventoryMaterialLazyRoute
+  '/operational/inventory/tools': typeof AuthenticatedOperationalInventoryToolsLazyRoute
   '/inventory/admin': typeof AuthenticatedInventoryAdminIndexRoute
   '/inventory/appr': typeof AuthenticatedInventoryApprIndexRoute
   '/inventory/prog': typeof AuthenticatedInventoryProgIndexRoute
@@ -573,6 +617,7 @@ export interface FileRoutesById {
   '/_authenticated/controller/ledger': typeof AuthenticatedControllerLedgerLazyRoute
   '/_authenticated/controller/tax': typeof AuthenticatedControllerTaxLazyRoute
   '/_authenticated/operational/customer': typeof AuthenticatedOperationalCustomerLazyRoute
+  '/_authenticated/operational/inventory': typeof AuthenticatedOperationalInventoryLazyRouteWithChildren
   '/_authenticated/operational/people': typeof AuthenticatedOperationalPeopleLazyRoute
   '/_authenticated/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/_authenticated/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
@@ -586,6 +631,8 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
+  '/_authenticated/operational/inventory/material': typeof AuthenticatedOperationalInventoryMaterialLazyRoute
+  '/_authenticated/operational/inventory/tools': typeof AuthenticatedOperationalInventoryToolsLazyRoute
   '/_authenticated/inventory/admin/': typeof AuthenticatedInventoryAdminIndexRoute
   '/_authenticated/inventory/appr/': typeof AuthenticatedInventoryApprIndexRoute
   '/_authenticated/inventory/prog/': typeof AuthenticatedInventoryProgIndexRoute
@@ -627,6 +674,7 @@ export interface FileRouteTypes {
     | '/controller/ledger'
     | '/controller/tax'
     | '/operational/customer'
+    | '/operational/inventory'
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
@@ -640,6 +688,8 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/tasks/'
     | '/users/'
+    | '/operational/inventory/material'
+    | '/operational/inventory/tools'
     | '/inventory/admin/'
     | '/inventory/appr/'
     | '/inventory/prog/'
@@ -679,6 +729,7 @@ export interface FileRouteTypes {
     | '/controller/ledger'
     | '/controller/tax'
     | '/operational/customer'
+    | '/operational/inventory'
     | '/operational/people'
     | '/operational/scheduling'
     | '/operational/service'
@@ -692,6 +743,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/users'
+    | '/operational/inventory/material'
+    | '/operational/inventory/tools'
     | '/inventory/admin'
     | '/inventory/appr'
     | '/inventory/prog'
@@ -734,6 +787,7 @@ export interface FileRouteTypes {
     | '/_authenticated/controller/ledger'
     | '/_authenticated/controller/tax'
     | '/_authenticated/operational/customer'
+    | '/_authenticated/operational/inventory'
     | '/_authenticated/operational/people'
     | '/_authenticated/operational/scheduling'
     | '/_authenticated/operational/service'
@@ -747,6 +801,8 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
+    | '/_authenticated/operational/inventory/material'
+    | '/_authenticated/operational/inventory/tools'
     | '/_authenticated/inventory/admin/'
     | '/_authenticated/inventory/appr/'
     | '/_authenticated/inventory/prog/'
@@ -995,6 +1051,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOperationalPeopleLazyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/operational/inventory': {
+      id: '/_authenticated/operational/inventory'
+      path: '/operational/inventory'
+      fullPath: '/operational/inventory'
+      preLoaderRoute: typeof AuthenticatedOperationalInventoryLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/operational/customer': {
       id: '/_authenticated/operational/customer'
       path: '/operational/customer'
@@ -1142,8 +1205,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventoryAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/operational/inventory/tools': {
+      id: '/_authenticated/operational/inventory/tools'
+      path: '/tools'
+      fullPath: '/operational/inventory/tools'
+      preLoaderRoute: typeof AuthenticatedOperationalInventoryToolsLazyRouteImport
+      parentRoute: typeof AuthenticatedOperationalInventoryLazyRoute
+    }
+    '/_authenticated/operational/inventory/material': {
+      id: '/_authenticated/operational/inventory/material'
+      path: '/material'
+      fullPath: '/operational/inventory/material'
+      preLoaderRoute: typeof AuthenticatedOperationalInventoryMaterialLazyRouteImport
+      parentRoute: typeof AuthenticatedOperationalInventoryLazyRoute
+    }
   }
 }
+
+interface AuthenticatedOperationalInventoryLazyRouteChildren {
+  AuthenticatedOperationalInventoryMaterialLazyRoute: typeof AuthenticatedOperationalInventoryMaterialLazyRoute
+  AuthenticatedOperationalInventoryToolsLazyRoute: typeof AuthenticatedOperationalInventoryToolsLazyRoute
+}
+
+const AuthenticatedOperationalInventoryLazyRouteChildren: AuthenticatedOperationalInventoryLazyRouteChildren =
+  {
+    AuthenticatedOperationalInventoryMaterialLazyRoute:
+      AuthenticatedOperationalInventoryMaterialLazyRoute,
+    AuthenticatedOperationalInventoryToolsLazyRoute:
+      AuthenticatedOperationalInventoryToolsLazyRoute,
+  }
+
+const AuthenticatedOperationalInventoryLazyRouteWithChildren =
+  AuthenticatedOperationalInventoryLazyRoute._addFileChildren(
+    AuthenticatedOperationalInventoryLazyRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCustomersLazyRoute: typeof AuthenticatedCustomersLazyRoute
@@ -1164,6 +1259,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedControllerLedgerLazyRoute: typeof AuthenticatedControllerLedgerLazyRoute
   AuthenticatedControllerTaxLazyRoute: typeof AuthenticatedControllerTaxLazyRoute
   AuthenticatedOperationalCustomerLazyRoute: typeof AuthenticatedOperationalCustomerLazyRoute
+  AuthenticatedOperationalInventoryLazyRoute: typeof AuthenticatedOperationalInventoryLazyRouteWithChildren
   AuthenticatedOperationalPeopleLazyRoute: typeof AuthenticatedOperationalPeopleLazyRoute
   AuthenticatedOperationalSchedulingLazyRoute: typeof AuthenticatedOperationalSchedulingLazyRoute
   AuthenticatedOperationalServiceLazyRoute: typeof AuthenticatedOperationalServiceLazyRoute
@@ -1207,6 +1303,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedControllerTaxLazyRoute: AuthenticatedControllerTaxLazyRoute,
   AuthenticatedOperationalCustomerLazyRoute:
     AuthenticatedOperationalCustomerLazyRoute,
+  AuthenticatedOperationalInventoryLazyRoute:
+    AuthenticatedOperationalInventoryLazyRouteWithChildren,
   AuthenticatedOperationalPeopleLazyRoute:
     AuthenticatedOperationalPeopleLazyRoute,
   AuthenticatedOperationalSchedulingLazyRoute:

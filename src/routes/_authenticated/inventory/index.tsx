@@ -31,9 +31,9 @@ function InventoryPage() {
     status: 'active'
   })
 
-  const { data: inventory, isLoading } = useQuery({
+  const { data: inventory = [], isLoading } = useQuery({
     queryKey: ['inventory'],
-    queryFn: getInventory
+    queryFn: () => getInventory()
   })
 
   const createMutation = useMutation({

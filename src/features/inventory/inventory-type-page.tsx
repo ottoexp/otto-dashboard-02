@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { getInventory, createInventory, updateInventory, deleteInventory, type Inventory, type CreateInventoryPayload } from '@/lib/api'
 
 interface Props {
-  type: 'material' | 'tools'
+  type: 'material' | 'tools' | ''
   title: string
 }
 
@@ -30,7 +30,7 @@ export function InventoryTypePage({ type, title }: Props) {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['inventory', type],
-    queryFn: () => getInventory(type),
+    queryFn: () => getInventory(type || undefined),
   })
 
   const createMutation = useMutation({
