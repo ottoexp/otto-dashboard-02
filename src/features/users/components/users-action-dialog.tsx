@@ -46,6 +46,8 @@ const formSchema = z
     role: z.string().min(1, 'Role is required.'),
     status: z.string().min(1, 'Status is required.'),
     cabang: z.string().min(1, 'Cabang is required.'),
+    position: z.string().optional(),
+    baseSalary: z.number().optional(),
     confirmPassword: z.string().transform((pwd) => pwd.trim()),
     isEdit: z.boolean(),
   })
@@ -109,6 +111,8 @@ export function UsersActionDialog({
           role: (currentRow as any).roleName || (currentRow as any).legacyRole || '',
           status: currentRow.status,
           cabang: currentRow.cabang || 'pusat',
+          position: (currentRow as any).position || '',
+          baseSalary: (currentRow as any).baseSalary || 0,
           password: '',
           confirmPassword: '',
           isEdit,
@@ -121,6 +125,8 @@ export function UsersActionDialog({
           role: '',
           status: 'active',
           cabang: 'pusat',
+          position: '',
+          baseSalary: 0,
           phoneNumber: '',
           password: '',
           confirmPassword: '',
@@ -168,9 +174,11 @@ export function UsersActionDialog({
           phoneNumber: values.phoneNumber,
           password: values.password,
           role: values.role as 'superadmin' | 'admin' | 'cashier' | 'manager',
-          status: values.status as 'active' | 'inactive' | 'invited' | 'suspended',
+          status: values.status as any,
           cabang: values.cabang as 'pusat' | 'kapuk' | 'cakung' | 'cikarang',
-        })
+          position: values.position || undefined,
+          baseSalary: values.baseSalary || undefined,
+        } as any)
         toast.success('User created successfully')
       }
       
@@ -356,6 +364,32 @@ export function UsersActionDialog({
                       className='col-span-4'
                       items={CABANG_OPTIONS}
                     />
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='position'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end'>Posisi</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Mekanik, Admin, dll' className='col-span-4' {...field} />
+                    </FormControl>
+                    <FormMessage className='col-span-4 col-start-3' />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='baseSalary'
+                render={({ field }) => (
+                  <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
+                    <FormLabel className='col-span-2 text-end'>Gaji Pokok</FormLabel>
+                    <FormControl>
+                      <Input type='number' placeholder='0' className='col-span-4' {...field} />
+                    </FormControl>
                     <FormMessage className='col-span-4 col-start-3' />
                   </FormItem>
                 )}

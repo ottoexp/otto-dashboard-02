@@ -1,12 +1,10 @@
 import {
   User,
   Package2,
-  Calendar,
   ClipboardList,
   Settings,
   Users as PersonnelIcon,
-  CalendarCheck,
-  GitBranch,
+  CalendarCheck, GitBranch,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 

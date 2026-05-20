@@ -5,6 +5,7 @@ const userStatusSchema = z.union([
   z.literal('inactive'),
   z.literal('invited'),
   z.literal('suspended'),
+  z.literal('non_apps'),
 ])
 export type UserStatus = z.infer<typeof userStatusSchema>
 
@@ -37,6 +38,8 @@ export const userSchema = z.object({
   roleName: z.string().nullable().optional(),
   legacyRole: z.string().nullable().optional(),
   cabang: userCabangSchema,
+  position: z.string().nullable().optional(),
+  baseSalary: z.number().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 })

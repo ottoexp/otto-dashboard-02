@@ -82,11 +82,13 @@ export interface User {
   username: string
   email: string
   phoneNumber: string | null
-  status: 'active' | 'inactive' | 'invited' | 'suspended'
+  status: 'active' | 'inactive' | 'invited' | 'suspended' | 'non_apps'
   role?: 'superadmin' | 'admin' | 'cashier' | 'manager'
   roleName?: string | null
   legacyRole?: string | null
   cabang: 'pusat' | 'kapuk' | 'cakung' | 'cikarang' | null
+  position?: string | null
+  baseSalary?: number | null
   createdAt: string
   updatedAt: string
 }
