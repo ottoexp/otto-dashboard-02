@@ -104,24 +104,21 @@ export const usersColumns: ColumnDef<User>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: 'role',
+    id: 'role',
+    accessorFn: (row) => (row as any).roleName || (row as any).legacyRole || null,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Role' />
     ),
     cell: ({ row }) => {
-      const { role } = row.original
-      const userType = roles.find(({ value }) => value === role)
-
-      if (!userType) {
-        return null
-      }
-
+      const roleName = row.getValue('role') as string | null
+      if (!roleName) return <span className='text-muted-foreground text-sm'>-</span>
+      const userType = roles.find(({ value }) => value === roleName)
       return (
         <div className='flex items-center gap-x-2'>
-          {userType.icon && (
+          {userType?.icon && (
             <userType.icon size={16} className='text-muted-foreground' />
           )}
-          <span className='text-sm capitalize'>{row.getValue('role')}</span>
+          <span className='text-sm capitalize'>{roleName}</span>
         </div>
       )
     },
