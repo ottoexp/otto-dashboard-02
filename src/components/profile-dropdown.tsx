@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { SignOutDialog } from '@/components/sign-out-dialog'
 import { useTheme } from '@/context/theme-provider'
-import { Check, Moon, Sun, Monitor, Palette, Users, CreditCard, Settings, Building } from 'lucide-react'
+import { Check, Moon, Sun, Monitor, Palette, Users, CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -73,17 +73,8 @@ export function ProfileDropdown() {
           
           <DropdownMenuSeparator />
           
-          {/* Settings Section */}
+          {/* Theme */}
           <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link to='/settings'>
-                <Settings className='mr-2 h-4 w-4' />
-                Profile
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </Link>
-            </DropdownMenuItem>
-            
-            {/* Theme Submenu */}
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <Palette className='mr-2 h-4 w-4' />
@@ -93,38 +84,22 @@ export function ProfileDropdown() {
                 <DropdownMenuItem onClick={() => setTheme('light')}>
                   <Sun className='mr-2 h-4 w-4' />
                   Light
-                  <Check
-                    size={14}
-                    className={cn('ml-auto', theme !== 'light' && 'hidden')}
-                  />
+                  <Check size={14} className={cn('ml-auto', theme !== 'light' && 'hidden')} />
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')}>
                   <Moon className='mr-2 h-4 w-4' />
                   Dark
-                  <Check
-                    size={14}
-                    className={cn('ml-auto', theme !== 'dark' && 'hidden')}
-                  />
+                  <Check size={14} className={cn('ml-auto', theme !== 'dark' && 'hidden')} />
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')}>
                   <Monitor className='mr-2 h-4 w-4' />
                   System
-                  <Check
-                    size={14}
-                    className={cn('ml-auto', theme !== 'system' && 'hidden')}
-                  />
+                  <Check size={14} className={cn('ml-auto', theme !== 'system' && 'hidden')} />
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
-            
-            <DropdownMenuItem asChild>
-              <Link to='/settings'>
-                <Building className='mr-2 h-4 w-4' />
-                Team
-              </Link>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
-          
+
           <DropdownMenuSeparator />
           <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
             Sign out
