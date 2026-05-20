@@ -5,9 +5,6 @@ import {
   Wrench as ServicesIcon,
   Calendar,
   DollarSign,
-  Building2,
-  BookOpen,
-  Receipt,
   Shield,
   Settings as AdminIcon,
 } from 'lucide-react'
@@ -43,21 +40,6 @@ export const sidebarData: SidebarData = {
               title: 'Cash',
               url: '/controller/cash',
               icon: DollarSign,
-            },
-            {
-              title: 'Bank',
-              url: '/controller/bank',
-              icon: Building2,
-            },
-            {
-              title: 'Ledger',
-              url: '/controller/ledger',
-              icon: BookOpen,
-            },
-            {
-              title: 'Tax',
-              url: '/controller/tax',
-              icon: Receipt,
             },
             {
               title: 'Admin',
