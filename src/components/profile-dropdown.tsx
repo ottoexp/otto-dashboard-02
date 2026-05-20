@@ -20,7 +20,7 @@ import {
   Check, Moon, Sun, Monitor, Palette,
   Users, Package2, User, Settings,
   ClipboardList, GitBranch, CalendarCheck,
-  ImagePlus, Menu,
+  ImagePlus, ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
@@ -51,16 +51,15 @@ export function ProfileDropdown() {
       <input ref={fileRef} type='file' accept='image/*' className='hidden' onChange={handlePhotoChange} />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='flex items-center gap-2 px-2 h-9'>
-            {savedPhoto ? (
-              <Avatar className='h-7 w-7'>
+          <Button variant='ghost' className='flex items-center gap-1.5 px-2 h-9'>
+            {savedPhoto && (
+              <Avatar className='h-6 w-6'>
                 <AvatarImage src={savedPhoto} />
-                <AvatarFallback><Menu size={16} /></AvatarFallback>
+                <AvatarFallback>{user?.name?.slice(0, 1) || 'U'}</AvatarFallback>
               </Avatar>
-            ) : (
-              <Menu size={20} />
             )}
-            <span className='font-semibold text-sm'>Menu</span>
+            <span className='font-semibold text-sm'>{user?.name?.split(' ')[0] || 'Menu'}</span>
+            <ChevronDown size={14} className='text-muted-foreground' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-52' align='start' forceMount>
@@ -72,9 +71,9 @@ export function ProfileDropdown() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {/* Setting submenu */}
+          {/* Navigation — Setting sejajar dengan Order/Flow */}
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger className='font-medium'>
               <Settings className='mr-2 h-4 w-4' />
               Setting
             </DropdownMenuSubTrigger>
@@ -135,8 +134,6 @@ export function ProfileDropdown() {
               </DropdownMenuSub>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-
-          <DropdownMenuSeparator />
 
           <DropdownMenuItem asChild>
             <Link to='/operational/spk'>
