@@ -137,35 +137,33 @@ function PersonnelPage() {
         <h2 className='text-2xl font-bold'>Personnel</h2>
 
         <Tabs defaultValue='users'>
-          {/* Tabs + Add button on same row */}
-          <div className='flex items-center justify-between'>
-            <TabsList>
-              <TabsTrigger value='users' className='flex items-center gap-1.5'>
-                <Users size={14} />
+          {/* Single row: tabs + add + search */}
+          <div className='flex items-center gap-2'>
+            <TabsList className='h-9'>
+              <TabsTrigger value='users' className='flex items-center gap-1 h-7 px-3'>
+                <Users size={13} />
                 Karyawan
               </TabsTrigger>
-              <TabsTrigger value='roles' className='flex items-center gap-1.5'>
-                <Shield size={14} />
+              <TabsTrigger value='roles' className='flex items-center gap-1 h-7 px-3'>
+                <Shield size={13} />
                 Roles
               </TabsTrigger>
             </TabsList>
             <UsersPrimaryButtons />
-          </div>
-
-          {/* Search below tabs row, only for Karyawan */}
-          <TabsContent value='users' className='mt-3 space-y-3'>
-            <div className='relative'>
-              <Search size={14} className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
+            <div className='relative flex-1'>
+              <Search size={13} className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
               <Input
                 placeholder='Cari karyawan...'
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className='pl-8'
+                className='pl-8 h-9'
               />
             </div>
+          </div>
+
+          <TabsContent value='users' className='mt-3'>
             <UsersTab search={search} />
           </TabsContent>
-
           <TabsContent value='roles' className='mt-3'>
             <RolesTab />
           </TabsContent>
