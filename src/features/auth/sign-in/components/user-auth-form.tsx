@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
-import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -19,15 +18,32 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const CABANG_OPTIONS = [
+  { value: 'pusat', label: 'Pusat' },
+  { value: 'kapuk', label: 'Kapuk' },
+  { value: 'cakung', label: 'Cakung' },
+  { value: 'cikarang', label: 'Cikarang' },
+]
 
 const formSchema = z.object({
+  cabang: z.enum(['pusat', 'kapuk', 'cakung', 'cikarang'], {
+    error: () => 'Pilih cabang',
+  }),
   email: z.email({
-    error: (iss) => (iss.input === '' ? 'Please enter your email' : undefined),
+    error: (iss) => (iss.input === '' ? 'Masukkan email' : 'Email tidak valid'),
   }),
   password: z
     .string()
-    .min(1, 'Please enter your password')
-    .min(7, 'Password must be at least 7 characters long'),
+    .min(1, 'Masukkan password')
+    .min(7, 'Password minimal 7 karakter'),
 })
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLFormElement> {
@@ -46,6 +62,7 @@ export function UserAuthForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      cabang: undefined,
       email: '',
       password: '',
     },
@@ -56,7 +73,7 @@ export function UserAuthForm({
 
     try {
       const { login } = await import('@/lib/api')
-      const response = await login(data)
+      const response = await login({ email: data.email, password: data.password, cabang: data.cabang })
 
       auth.setUser({
         id: response.user.id,
@@ -73,7 +90,7 @@ export function UserAuthForm({
 
       toast.success(`Welcome back, ${data.email}!`)
     } catch (error) {
-      toast.error('Invalid email or password')
+      toast.error('Email, password, atau cabang tidak valid')
     } finally {
       setIsLoading(false)
     }
@@ -86,6 +103,30 @@ export function UserAuthForm({
         className={cn('grid gap-3', className)}
         {...props}
       >
+        <FormField
+          control={form.control}
+          name='cabang'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cabang</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder='Pilih cabang...' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CABANG_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='email'
@@ -122,26 +163,6 @@ export function UserAuthForm({
           {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
           Sign in
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background px-2 text-muted-foreground'>
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )

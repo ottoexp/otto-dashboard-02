@@ -19,6 +19,7 @@ api.interceptors.request.use((config) => {
 export interface LoginPayload {
   email: string
   password: string
+  cabang?: string
 }
 
 export interface RegisterPayload {
