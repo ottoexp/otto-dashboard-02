@@ -98,12 +98,6 @@ export const sidebarData: SidebarData = {
               ],
             },
             {
-              title: 'People',
-              url: '/operational/people',
-              icon: PeopleIcon,
-              permission: { resource: 'team', action: 'read' },
-            },
-            {
               title: 'Scheduling',
               url: '/operational/scheduling',
               icon: Calendar,
