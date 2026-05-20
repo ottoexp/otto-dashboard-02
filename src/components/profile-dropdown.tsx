@@ -58,24 +58,21 @@ export function ProfileDropdown() {
                 <AvatarFallback>{user?.name?.slice(0, 1) || 'U'}</AvatarFallback>
               </Avatar>
             )}
-            <span className='font-semibold text-sm'>{user?.name?.split(' ')[0] || 'Menu'}</span>
-            <ChevronDown size={14} className='text-muted-foreground' />
+            <div className='text-left leading-tight'>
+              <p className='text-sm font-semibold'>{user?.name || 'Menu'}</p>
+              {user?.cabang && (
+                <p className='text-xs text-muted-foreground capitalize'>{user.cabang}</p>
+              )}
+            </div>
+            <ChevronDown size={14} className='text-muted-foreground ml-0.5' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-52' align='start' forceMount>
-          <DropdownMenuLabel className='font-normal'>
-            <div className='flex flex-col gap-0.5'>
-              <p className='text-sm font-medium'>{user?.name || 'User'}</p>
-              <p className='text-xs text-muted-foreground capitalize'>{user?.cabang || ''}</p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-
-          {/* Navigation — Setting sejajar dengan Order/Flow */}
+          {/* Setting sejajar Order/Flow — 1 spasi indent via pl */}
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className='font-medium'>
+            <DropdownMenuSubTrigger>
               <Settings className='mr-2 h-4 w-4' />
-              Setting
+              {' '}Setting
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className='w-48'>
               <DropdownMenuItem asChild>

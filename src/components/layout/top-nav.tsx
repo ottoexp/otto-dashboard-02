@@ -10,7 +10,7 @@ function Clock() {
   }, [])
 
   const date = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })
-  const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 
   return (
     <div className='text-sm text-muted-foreground leading-tight'>
