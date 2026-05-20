@@ -1,11 +1,12 @@
 import {
   User,
   Package2,
-  Wrench as ServicesIcon,
-  Calendar,
+  Wrench,
   ClipboardList,
   Settings as AdminIcon,
-  Users as AbsensiIcon,
+  Users,
+  GitBranch,
+  Hammer,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -21,41 +22,42 @@ export const sidebarData: SidebarData = {
       title: '',
       items: [
         {
-          title: 'Absensi',
-          url: '/controller/attendance',
-          icon: AbsensiIcon,
-        },
-        {
-          title: 'Customer',
-          url: '/operational/customer',
-          icon: User,
-          permission: { resource: 'customers', action: 'read' },
-        },
-        {
-          title: 'Service',
-          url: '/operational/service',
-          icon: ServicesIcon,
-        },
-        {
-          title: 'Inventory',
-          url: '/operational/inventory',
-          icon: Package2,
-          permission: { resource: 'inventory', action: 'read' },
-        },
-        {
-          title: 'Scheduling',
-          url: '/operational/scheduling',
-          icon: Calendar,
-        },
-        {
-          title: 'Workorder',
+          title: 'Order',
           url: '/operational/spk',
           icon: ClipboardList,
         },
         {
+          title: 'Flow',
+          url: '/operational/scheduling',
+          icon: GitBranch,
+        },
+        {
+          title: 'Inventory',
+          icon: Package2,
+          items: [
+            {
+              title: 'Material',
+              url: '/operational/inventory/material',
+            },
+            {
+              title: 'Tools',
+              url: '/operational/inventory/tools',
+            },
+          ],
+        },
+        {
           title: 'Admin',
-          url: '/controller/admin',
           icon: AdminIcon,
+          items: [
+            {
+              title: 'Customer',
+              url: '/operational/customer',
+            },
+            {
+              title: 'Personnel',
+              url: '/operational/people',
+            },
+          ],
         },
       ],
     },
