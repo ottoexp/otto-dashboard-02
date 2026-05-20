@@ -1,6 +1,7 @@
 import { UsersActionDialog } from './users-action-dialog'
 import { UsersDeleteDialog } from './users-delete-dialog'
 import { UsersInviteDialog } from './users-invite-dialog'
+import { UsersMutasiDialog } from './users-mutasi-dialog'
 import { useUsers } from './users-provider'
 
 export function UsersDialogs() {
@@ -43,6 +44,17 @@ export function UsersDialogs() {
               }, 500)
             }}
             currentRow={currentRow}
+          />
+
+          <UsersMutasiDialog
+            key={`user-mutasi-${currentRow.id}`}
+            open={open === 'mutasi'}
+            onOpenChange={() => {
+              setOpen('mutasi')
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }}
           />
         </>
       )}

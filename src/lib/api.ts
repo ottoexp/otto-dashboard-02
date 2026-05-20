@@ -167,6 +167,11 @@ export async function setUserStatus(id: string, status: 'active' | 'inactive' | 
   return data
 }
 
+export async function mutateCabang(id: string, cabang: string): Promise<User> {
+  const { data } = await api.patch<User>(`/users/${id}/mutasi`, { cabang })
+  return data
+}
+
 // Role types
 export interface Role {
   id: string

@@ -1,6 +1,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Power, PowerOff, Trash2, UserPen } from 'lucide-react'
+import { ArrowLeftRight, Power, PowerOff, Trash2, UserPen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -73,6 +73,17 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
                 {isActive ? 'Deactivate' : 'Activate'}
                 <DropdownMenuShortcut>
                   {isActive ? <PowerOff size={16} /> : <Power size={16} />}
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setCurrentRow(row.original)
+                  setOpen('mutasi')
+                }}
+              >
+                Mutasi
+                <DropdownMenuShortcut>
+                  <ArrowLeftRight size={16} />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
               {canDelete && <DropdownMenuSeparator />}

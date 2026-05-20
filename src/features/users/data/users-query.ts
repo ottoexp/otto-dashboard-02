@@ -7,6 +7,7 @@ import {
   deleteUser,
   toggleUserStatus,
   setUserStatus,
+  mutateCabang,
   type GetUsersParams,
   type CreateUserPayload,
   type UpdateUserPayload,
@@ -82,6 +83,16 @@ export function useSetUserStatusMutation() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: 'active' | 'inactive' | 'invited' | 'suspended' }) =>
       setUserStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: usersKeys.lists() })
+    },
+  })
+}
+
+export function useMutasiCabangMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, cabang }: { id: string; cabang: string }) => mutateCabang(id, cabang),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: usersKeys.lists() })
     },
