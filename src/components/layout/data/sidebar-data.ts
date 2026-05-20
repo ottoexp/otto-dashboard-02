@@ -17,6 +17,31 @@ export const sidebarData: SidebarData = {
   teams: [],
   navGroups: [
     {
+      title: 'Setting',
+      items: [
+        {
+          title: 'Personnel',
+          url: '/operational/people',
+          icon: PersonnelIcon,
+        },
+        {
+          title: 'Inventory',
+          url: '/operational/inventory',
+          icon: Package2,
+        },
+        {
+          title: 'Customer',
+          url: '/operational/customer',
+          icon: User,
+        },
+        {
+          title: 'Admin',
+          url: '/controller/admin',
+          icon: Settings,
+        },
+      ],
+    },
+    {
       title: '',
       items: [
         {
@@ -33,31 +58,6 @@ export const sidebarData: SidebarData = {
           title: 'Attendance',
           url: '/controller/attendance',
           icon: CalendarCheck,
-        },
-      ],
-    },
-    {
-      title: 'Setting',
-      items: [
-        {
-          title: 'Inventory',
-          url: '/operational/inventory',
-          icon: Package2,
-        },
-        {
-          title: 'Customer',
-          url: '/operational/customer',
-          icon: User,
-        },
-        {
-          title: 'Personnel',
-          url: '/operational/people',
-          icon: PersonnelIcon,
-        },
-        {
-          title: 'Admin',
-          url: '/controller/admin',
-          icon: Settings,
         },
       ],
     },
