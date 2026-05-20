@@ -325,8 +325,10 @@ export interface UpdateInventoryPayload {
 }
 
 // Inventory API
-export async function getInventory(): Promise<Inventory[]> {
-  const { data } = await api.get<{ data: Inventory[], pagination: any }>('/inventory')
+export async function getInventory(type?: string): Promise<Inventory[]> {
+  const { data } = await api.get<{ data: Inventory[], pagination: any }>('/inventory', {
+    params: type ? { type } : {}
+  })
   return data.data
 }
 
