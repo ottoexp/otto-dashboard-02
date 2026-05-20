@@ -3,6 +3,7 @@ import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
 const ACCESS_TOKEN = 'otto_access_token'
 const REFRESH_TOKEN = 'otto_refresh_token'
+const LAYOUT_KEY = 'otto_layout'
 
 interface AuthUser {
   id: string
@@ -20,6 +21,8 @@ interface AuthState {
     setAccessToken: (accessToken: string) => void
     refreshToken: string
     setRefreshToken: (refreshToken: string) => void
+    layout: 'desktop' | 'mobile'
+    setLayout: (layout: 'desktop' | 'mobile') => void
     reset: () => void
   }
 }
@@ -27,21 +30,29 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()((set) => {
   let initToken = ''
   let initRefreshToken = ''
-  
+  let initLayout: 'desktop' | 'mobile' = 'desktop'
+
   try {
     const cookieState = getCookie(ACCESS_TOKEN)
     initToken = cookieState ? JSON.parse(cookieState) : ''
   } catch {
     initToken = ''
   }
-  
+
   try {
     const refreshCookieState = getCookie(REFRESH_TOKEN)
     initRefreshToken = refreshCookieState ? JSON.parse(refreshCookieState) : ''
   } catch {
     initRefreshToken = ''
   }
-  
+
+  try {
+    const savedLayout = localStorage.getItem(LAYOUT_KEY)
+    if (savedLayout === 'mobile' || savedLayout === 'desktop') initLayout = savedLayout
+  } catch {
+    initLayout = 'desktop'
+  }
+
   return {
     auth: {
       user: null,
@@ -58,6 +69,12 @@ export const useAuthStore = create<AuthState>()((set) => {
         set((state) => {
           setCookie(REFRESH_TOKEN, JSON.stringify(refreshToken))
           return { ...state, auth: { ...state.auth, refreshToken } }
+        }),
+      layout: initLayout,
+      setLayout: (layout) =>
+        set((state) => {
+          localStorage.setItem(LAYOUT_KEY, layout)
+          return { ...state, auth: { ...state.auth, layout } }
         }),
       reset: () =>
         set((state) => {
