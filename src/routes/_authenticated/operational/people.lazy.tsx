@@ -91,7 +91,6 @@ function UsersTab({ search }: { search: string }) {
           )}
         </TableBody>
       </Table>
-    </div>
   )
 }
 
