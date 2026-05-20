@@ -49,7 +49,6 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function UserAuthForm({ className, redirectTo }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [showLayoutPicker, setShowLayoutPicker] = useState(false)
   const navigate = useNavigate()
   const { auth } = useAuthStore()
 
@@ -72,7 +71,7 @@ export function UserAuthForm({ className, redirectTo }: UserAuthFormProps) {
       })
       auth.setAccessToken(response.accessToken)
       auth.setRefreshToken(response.refreshToken)
-      setShowLayoutPicker(true)
+      navigate({ to: redirectTo || '/', replace: true })
     } catch {
       toast.error('Email, password, atau cabang tidak valid')
     } finally {
@@ -80,109 +79,104 @@ export function UserAuthForm({ className, redirectTo }: UserAuthFormProps) {
     }
   }
 
-  function chooseLayout(layout: 'desktop' | 'mobile') {
-    auth.setLayout(layout)
-    navigate({ to: redirectTo || '/', replace: true })
-  }
-
-  if (showLayoutPicker) {
-    return (
-      <div className={cn('flex flex-col gap-6', className)}>
-        <div className='text-center'>
-          <p className='text-base font-semibold'>Pilih tampilan</p>
-          <p className='text-sm text-muted-foreground mt-1'>Sesuaikan dengan perangkat yang kamu gunakan</p>
-        </div>
-        <div className='grid grid-cols-2 gap-4'>
+  return (
+    <div className={cn('grid gap-4', className)}>
+      {/* Layout Picker */}
+      <div>
+        <p className='text-sm font-medium mb-2'>Tampilan</p>
+        <div className='grid grid-cols-2 gap-2'>
           <button
-            onClick={() => chooseLayout('desktop')}
-            className='flex flex-col items-center gap-3 rounded-xl border-2 p-6 hover:border-primary hover:bg-primary/5 transition-all'
+            type='button'
+            onClick={() => auth.setLayout('desktop')}
+            className={cn(
+              'flex items-center gap-2 rounded-lg border-2 px-3 py-2 transition-all',
+              auth.layout === 'desktop'
+                ? 'border-primary bg-primary/5 text-primary'
+                : 'border-border text-muted-foreground hover:border-primary/50'
+            )}
           >
-            <Monitor size={40} className='text-blue-500' />
-            <div className='text-center'>
-              <p className='font-semibold'>Desktop</p>
-              <p className='text-xs text-muted-foreground mt-0.5'>PC / Laptop</p>
-            </div>
+            <Monitor size={18} />
+            <span className='text-sm font-medium'>Desktop</span>
           </button>
           <button
-            onClick={() => chooseLayout('mobile')}
-            className='flex flex-col items-center gap-3 rounded-xl border-2 p-6 hover:border-primary hover:bg-primary/5 transition-all'
+            type='button'
+            onClick={() => auth.setLayout('mobile')}
+            className={cn(
+              'flex items-center gap-2 rounded-lg border-2 px-3 py-2 transition-all',
+              auth.layout === 'mobile'
+                ? 'border-primary bg-primary/5 text-primary'
+                : 'border-border text-muted-foreground hover:border-primary/50'
+            )}
           >
-            <Smartphone size={40} className='text-green-500' />
-            <div className='text-center'>
-              <p className='font-semibold'>Mobile</p>
-              <p className='text-xs text-muted-foreground mt-0.5'>HP / Tablet</p>
-            </div>
+            <Smartphone size={18} />
+            <span className='text-sm font-medium'>Mobile</span>
           </button>
         </div>
       </div>
-    )
-  }
 
-  return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-3', className)}
-      >
-        <FormField
-          control={form.control}
-          name='cabang'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cabang</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
+      {/* Login Form */}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-3'>
+          <FormField
+            control={form.control}
+            name='cabang'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cabang</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Pilih cabang...' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {CABANG_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Pilih cabang...' />
-                  </SelectTrigger>
+                  <Input placeholder='name@example.com' {...field} />
                 </FormControl>
-                <SelectContent>
-                  {CABANG_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder='name@example.com' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem className='relative'>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder='********' {...field} />
-              </FormControl>
-              <FormMessage />
-              <Link
-                to='/forgot-password'
-                className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
-              >
-                Forgot password?
-              </Link>
-            </FormItem>
-          )}
-        />
-        <Button className='mt-2' disabled={isLoading}>
-          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
-          Sign in
-        </Button>
-      </form>
-    </Form>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem className='relative'>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInput placeholder='********' {...field} />
+                </FormControl>
+                <FormMessage />
+                <Link
+                  to='/forgot-password'
+                  className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
+                >
+                  Forgot password?
+                </Link>
+              </FormItem>
+            )}
+          />
+          <Button className='mt-2' disabled={isLoading}>
+            {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
+            Sign in
+          </Button>
+        </form>
+      </Form>
+    </div>
   )
 }
