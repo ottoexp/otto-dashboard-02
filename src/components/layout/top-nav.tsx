@@ -124,8 +124,7 @@ export function TopNav() {
         {/* Left - Logo */}
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Otto ERP" className="h-8 w-auto" />
-            <span className="font-bold text-lg hidden sm:inline">Otto ERP</span>
+            <span className="font-bold text-xl tracking-tight">Sofa</span>
           </Link>
         </div>
 
