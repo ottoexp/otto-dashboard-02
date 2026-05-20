@@ -24,9 +24,8 @@ const STATUS_COLORS: Record<string, string> = {
   non_apps: 'bg-yellow-100 text-yellow-700',
 }
 
-function UsersTab() {
+function UsersTab({ search }: { search: string }) {
   const { setOpen, setCurrentRow } = useUsers()
-  const [search, setSearch] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', search],
@@ -41,21 +40,7 @@ function UsersTab() {
     : users
 
   return (
-    <div className='space-y-4'>
-      <div className='flex items-center gap-2'>
-        <div className='relative flex-1'>
-          <Search size={14} className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
-          <Input
-            placeholder='Cari karyawan...'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className='pl-8'
-          />
-        </div>
-        <UsersPrimaryButtons />
-      </div>
-
-      <Table>
+    <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Nama</TableHead>
@@ -145,30 +130,44 @@ function RolesTab() {
 }
 
 function PersonnelPage() {
+  const [search, setSearch] = useState('')
+
   return (
     <UsersProvider>
-      <div className='space-y-4'>
-        <div>
-          <h2 className='text-2xl font-bold'>Personnel</h2>
-          <p className='text-sm text-muted-foreground'>Data karyawan & akun pengguna</p>
-        </div>
+      <div className='space-y-3'>
+        <h2 className='text-2xl font-bold'>Personnel</h2>
 
         <Tabs defaultValue='users'>
-          <TabsList>
-            <TabsTrigger value='users' className='flex items-center gap-1.5'>
-              <Users size={14} />
-              Karyawan
-            </TabsTrigger>
-            <TabsTrigger value='roles' className='flex items-center gap-1.5'>
-              <Shield size={14} />
-              Roles
-            </TabsTrigger>
-          </TabsList>
+          {/* Tabs + Add button on same row */}
+          <div className='flex items-center justify-between'>
+            <TabsList>
+              <TabsTrigger value='users' className='flex items-center gap-1.5'>
+                <Users size={14} />
+                Karyawan
+              </TabsTrigger>
+              <TabsTrigger value='roles' className='flex items-center gap-1.5'>
+                <Shield size={14} />
+                Roles
+              </TabsTrigger>
+            </TabsList>
+            <UsersPrimaryButtons />
+          </div>
 
-          <TabsContent value='users' className='mt-4'>
-            <UsersTab />
+          {/* Search below tabs row, only for Karyawan */}
+          <TabsContent value='users' className='mt-3 space-y-3'>
+            <div className='relative'>
+              <Search size={14} className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
+              <Input
+                placeholder='Cari karyawan...'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className='pl-8'
+              />
+            </div>
+            <UsersTab search={search} />
           </TabsContent>
-          <TabsContent value='roles' className='mt-4'>
+
+          <TabsContent value='roles' className='mt-3'>
             <RolesTab />
           </TabsContent>
         </Tabs>
