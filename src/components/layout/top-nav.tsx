@@ -9,13 +9,14 @@ function Clock() {
     return () => clearInterval(t)
   }, [])
 
-  const date = now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })
+  const day = now.toLocaleDateString('id-ID', { weekday: 'short' })
+  const date = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
   const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className='text-sm text-muted-foreground leading-tight'>
+    <div className='text-sm text-muted-foreground'>
+      <span>{day}, {date} </span>
       <span className='font-medium text-foreground'>{time}</span>
-      <span className='ml-2 hidden sm:inline'>{date}</span>
     </div>
   )
 }
