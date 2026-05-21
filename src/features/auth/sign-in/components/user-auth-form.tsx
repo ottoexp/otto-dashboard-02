@@ -37,7 +37,7 @@ const formSchema = z.object({
 
 const BTN = (active: boolean) =>
   cn(
-    'rounded-lg border px-3 py-1 text-sm transition-all whitespace-nowrap',
+    'rounded-md border px-2 py-0.5 text-xs transition-all whitespace-nowrap',
     active
       ? 'border-primary bg-primary/5 text-primary font-medium'
       : 'border-border text-muted-foreground hover:border-primary/50'
