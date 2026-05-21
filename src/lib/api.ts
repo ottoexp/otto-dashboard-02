@@ -993,6 +993,18 @@ export async function deleteScheduling(id: string): Promise<void> {
   await api.delete(`/scheduling/${id}`)
 }
 
+export interface SPKTask {
+  id: string
+  spk_id: string
+  divisi: 'bongkar' | 'dempul' | 'epoxy' | 'cat' | 'poles' | 'pasang'
+  status: 'pending' | 'in_progress' | 'completed'
+  worker_id: string | null
+  worker_name: string | null
+  started_at: string | null
+  finished_at: string | null
+  notes: string | null
+}
+
 // SPK types matching backend API
 export interface SPK {
   id: string
@@ -1009,7 +1021,15 @@ export interface SPK {
   created_by: string | null
   created_at: string
   updated_at: string
+  customer_id?: string | null
+  customer_name?: string | null
+  customer_phone?: string | null
+  unit_plate?: string | null
+  unit_year?: number | null
+  task_count?: number
+  task_done?: number
   jasa?: SPKJasa[]
+  tasks?: SPKTask[]
   first_name?: string
   last_name?: string
 }
@@ -1099,6 +1119,26 @@ export async function updateSPK(id: string, payload: UpdateSPKPayload): Promise<
 
 export async function updateSPKStatus(id: string, status: SPK['status']): Promise<SPK> {
   const { data } = await api.patch<{ data: SPK }>(`/service/spk/${id}/status`, { status })
+  return data.data
+}
+
+export async function getSPKDetail(id: string): Promise<SPK> {
+  const { data } = await api.get<{ data: SPK }>(`/service/spk/${id}/detail`)
+  return data.data
+}
+
+export async function addSPKTask(spkId: string, divisi: string): Promise<SPKTask[]> {
+  const { data } = await api.post<{ data: SPKTask[] }>(`/service/spk/${spkId}/tasks`, { divisi })
+  return data.data
+}
+
+export async function startSPKTask(taskId: string): Promise<SPKTask> {
+  const { data } = await api.patch<{ data: SPKTask }>(`/service/spk/tasks/${taskId}/start`, {})
+  return data.data
+}
+
+export async function finishSPKTask(taskId: string, notes?: string): Promise<SPKTask> {
+  const { data } = await api.patch<{ data: SPKTask }>(`/service/spk/tasks/${taskId}/finish`, { notes })
   return data.data
 }
 
