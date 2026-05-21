@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn, Monitor, Smartphone } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
@@ -13,7 +13,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -36,9 +35,18 @@ const formSchema = z.object({
   password: z.string().min(1, 'Masukkan password').min(7, 'Password minimal 7 karakter'),
 })
 
-interface UserAuthFormProps {
-  redirectTo?: string
-}
+const BTN = (active: boolean) =>
+  cn(
+    'rounded-lg border px-3 py-1 text-sm transition-all whitespace-nowrap',
+    active
+      ? 'border-primary bg-primary/5 text-primary font-medium'
+      : 'border-border text-muted-foreground hover:border-primary/50'
+  )
+
+const ROW = 'flex items-center gap-3'
+const LABEL = 'text-sm font-medium w-20 shrink-0'
+
+interface UserAuthFormProps { redirectTo?: string }
 
 export function UserAuthForm({ redirectTo }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
@@ -74,108 +82,83 @@ export function UserAuthForm({ redirectTo }: UserAuthFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
 
         {/* Tampilan — 1 line */}
-        <div className='flex items-center gap-2'>
-          <span className='text-sm font-medium w-20 shrink-0'>Tampilan</span>
+        <div className={ROW}>
+          <span className={LABEL}>Tampilan</span>
           <div className='flex gap-2'>
-            <button
-              type='button'
-              onClick={() => auth.setLayout('desktop')}
-              className={cn(
-                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-all',
-                auth.layout === 'desktop'
-                  ? 'border-primary bg-primary/5 text-primary font-medium'
-                  : 'border-border text-muted-foreground hover:border-primary/50'
-              )}
-            >
-              <Monitor size={15} /> Desktop
+            <button type='button' onClick={() => auth.setLayout('desktop')} className={BTN(auth.layout === 'desktop')}>
+              <Monitor size={13} className='inline mr-1' />Desktop
             </button>
-            <button
-              type='button'
-              onClick={() => auth.setLayout('mobile')}
-              className={cn(
-                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-all',
-                auth.layout === 'mobile'
-                  ? 'border-primary bg-primary/5 text-primary font-medium'
-                  : 'border-border text-muted-foreground hover:border-primary/50'
-              )}
-            >
-              <Smartphone size={15} /> Mobile
+            <button type='button' onClick={() => auth.setLayout('mobile')} className={BTN(auth.layout === 'mobile')}>
+              <Smartphone size={13} className='inline mr-1' />Mobile
             </button>
           </div>
         </div>
 
-        {/* Cabang — 1 line, button group */}
+        {/* Cabang — 1 line semua */}
         <FormField
           control={form.control}
           name='cabang'
           render={({ field }) => (
             <FormItem>
-              <div className='flex items-center gap-2'>
-                <FormLabel className='w-20 shrink-0 m-0'>Cabang</FormLabel>
+              <div className={ROW}>
+                <span className={LABEL}>Cabang</span>
                 <div className='flex flex-wrap gap-2'>
                   {CABANG_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
                       type='button'
                       onClick={() => field.onChange(opt.value)}
-                      className={cn(
-                        'rounded-lg border px-3 py-1.5 text-sm transition-all',
-                        field.value === opt.value
-                          ? 'border-primary bg-primary/5 text-primary font-medium'
-                          : 'border-border text-muted-foreground hover:border-primary/50'
-                      )}
+                      className={BTN(field.value === opt.value)}
                     >
                       {opt.label}
                     </button>
                   ))}
                 </div>
               </div>
-              <FormMessage className='ml-20' />
+              <FormMessage className='ml-[92px]' />
             </FormItem>
           )}
         />
 
-        {/* Email */}
+        {/* Email — 1 line */}
         <FormField
           control={form.control}
           name='email'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder='name@example.com' {...field} />
-              </FormControl>
-              <FormMessage />
+              <div className={ROW}>
+                <span className={LABEL}>Email</span>
+                <FormControl>
+                  <Input placeholder='name@example.com' className='flex-1' {...field} />
+                </FormControl>
+              </div>
+              <FormMessage className='ml-[92px]' />
             </FormItem>
           )}
         />
 
-        {/* Password */}
+        {/* Password — 1 line */}
         <FormField
           control={form.control}
           name='password'
           render={({ field }) => (
-            <FormItem className='relative'>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder='••••••••' {...field} />
-              </FormControl>
-              <FormMessage />
-              <Link
-                to='/forgot-password'
-                className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
-              >
-                Lupa password?
-              </Link>
+            <FormItem>
+              <div className={ROW}>
+                <span className={LABEL}>Password</span>
+                <FormControl>
+                  <PasswordInput placeholder='••••••••' className='flex-1' {...field} />
+                </FormControl>
+              </div>
+              <FormMessage className='ml-[92px]' />
             </FormItem>
           )}
         />
 
-        <Button className='w-full' disabled={isLoading}>
-          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn size={16} />}
+        <Button className='w-full mt-2' disabled={isLoading}>
+          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn size={15} />}
           Masuk
         </Button>
       </form>
