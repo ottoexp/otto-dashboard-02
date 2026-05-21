@@ -69,7 +69,7 @@ export function ProfileDropdown() {
         <DropdownMenuContent className='w-52' align='start' forceMount>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className='gap-2'>
-              <Settings className='h-4 w-4' />
+              <Settings className='mr-2 h-4 w-4' />
               Setting
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className='w-48'>
