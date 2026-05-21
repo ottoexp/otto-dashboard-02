@@ -15,11 +15,12 @@ export const Route = createLazyFileRoute('/_authenticated/controller/attendance'
 })
 
 // --- API helpers ---
-const getToday = async () => { const { data } = await api.get('/attendance/today'); return data.data }
-const checkIn   = async (body: any) => { const { data } = await api.post('/attendance/check-in', body); return data.data }
-const breakStart = async () => { const { data } = await api.post('/attendance/break-start', {}); return data.data }
-const breakEnd   = async () => { const { data } = await api.post('/attendance/break-end', {}); return data.data }
-const checkOut  = async (body: any) => { const { data } = await api.post('/attendance/check-out', body); return data.data }
+const BASE = '/controller/attendance'
+const getToday   = async () => { const { data } = await api.get(`${BASE}/today`); return data.data }
+const checkIn    = async (body: any) => { const { data } = await api.post(`${BASE}/check-in`, body); return data.data }
+const breakStart = async () => { const { data } = await api.post(`${BASE}/break-start`, {}); return data.data }
+const breakEnd   = async () => { const { data } = await api.post(`${BASE}/break-end`, {}); return data.data }
+const checkOut   = async (body: any) => { const { data } = await api.post(`${BASE}/check-out`, body); return data.data }
 
 // --- Clock ---
 function useClock() {
