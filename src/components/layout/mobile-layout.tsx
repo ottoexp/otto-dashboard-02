@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/auth-store'
 import {
   ClipboardList, GitBranch, Settings,
   LogOut, Users, Package2, User,
-  Settings2, Palette, ChevronLeft,
+  Settings2, Palette, ChevronLeft, Camera,
   type LucideIcon,
 } from 'lucide-react'
+
+const MOBILE_PHOTO_KEY = 'otto_mobile_photo'
 
 interface NavItem {
   title: string
@@ -29,7 +31,21 @@ export function MobileLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const { auth } = useAuthStore()
   const [showSetting, setShowSetting] = useState(false)
+  const [photo, setPhoto] = useState<string>(() => localStorage.getItem(MOBILE_PHOTO_KEY) || '')
+  const fileRef = useRef<HTMLInputElement>(null)
   const isHome = location.pathname === '/'
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const url = reader.result as string
+      localStorage.setItem(MOBILE_PHOTO_KEY, url)
+      setPhoto(url)
+    }
+    reader.readAsDataURL(file)
+  }
 
   if (!isHome) {
     return (
@@ -65,17 +81,29 @@ export function MobileLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
+      <input ref={fileRef} type='file' accept='image/*' className='hidden' onChange={handlePhotoChange} />
       {/* Header */}
       <div className='bg-white border-b px-4 py-3 flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-3'>
           {showSetting && (
-            <button onClick={() => setShowSetting(false)} className='text-blue-500 mr-1'>
+            <button onClick={() => setShowSetting(false)} className='text-blue-500'>
               <ChevronLeft size={22} />
             </button>
           )}
+          {/* Avatar photo */}
+          <button onClick={() => fileRef.current?.click()} className='relative shrink-0'>
+            {photo ? (
+              <img src={photo} className='h-11 w-11 rounded-full object-cover border-2 border-gray-200' alt='foto' />
+            ) : (
+              <div className='h-11 w-11 rounded-full bg-gray-200 flex items-center justify-center text-gray-400'>
+                <Camera size={18} />
+              </div>
+            )}
+          </button>
+          {/* Name & cabang */}
           <div>
-            <p className='text-lg font-bold'>{showSetting ? 'Setting' : 'Menu'}</p>
-            <p className='text-xs text-gray-500'>{auth.user?.name} · {auth.user?.cabang}</p>
+            <p className='text-base font-bold leading-tight'>{auth.user?.name || '—'}</p>
+            <p className='text-xs text-gray-500 capitalize'>{auth.user?.cabang || ''}</p>
           </div>
         </div>
         <button
