@@ -4,6 +4,7 @@ import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 const ACCESS_TOKEN = 'otto_access_token'
 const REFRESH_TOKEN = 'otto_refresh_token'
 const LAYOUT_KEY = 'otto_layout'
+const USER_KEY = 'otto_user'
 
 interface AuthUser {
   id: string
@@ -53,11 +54,23 @@ export const useAuthStore = create<AuthState>()((set) => {
     initLayout = 'desktop'
   }
 
+  let initUser: AuthUser | null = null
+  try {
+    const savedUser = localStorage.getItem(USER_KEY)
+    if (savedUser) initUser = JSON.parse(savedUser)
+  } catch {
+    initUser = null
+  }
+
   return {
     auth: {
-      user: null,
+      user: initUser,
       setUser: (user) =>
-        set((state) => ({ ...state, auth: { ...state.auth, user } })),
+        set((state) => {
+          if (user) localStorage.setItem(USER_KEY, JSON.stringify(user))
+          else localStorage.removeItem(USER_KEY)
+          return { ...state, auth: { ...state.auth, user } }
+        }),
       accessToken: initToken,
       setAccessToken: (accessToken) =>
         set((state) => {
@@ -80,6 +93,7 @@ export const useAuthStore = create<AuthState>()((set) => {
         set((state) => {
           removeCookie(ACCESS_TOKEN)
           removeCookie(REFRESH_TOKEN)
+          localStorage.removeItem(USER_KEY)
           return {
             ...state,
             auth: { ...state.auth, user: null, accessToken: '', refreshToken: '' },
