@@ -1,6 +1,5 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useRef } from 'react'
-import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +12,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from '@/components/ui/dropdown-menu'
-import { SignOutDialog } from '@/components/sign-out-dialog'
 import { useTheme } from '@/context/theme-provider'
 import {
   Check, Moon, Sun, Monitor, Palette,
@@ -27,21 +25,23 @@ import { useAuthStore } from '@/stores/auth-store'
 const MENU_PHOTO_KEY = 'otto_menu_photo'
 
 export function ProfileDropdown() {
-  const [open, setOpen] = useDialogState()
   const { theme, setTheme } = useTheme()
-  const { user } = useAuthStore().auth
+  const { auth } = useAuthStore()
+  const { user } = auth
+  const navigate = useNavigate()
   const fileRef = useRef<HTMLInputElement>(null)
-
   const savedPhoto = localStorage.getItem(MENU_PHOTO_KEY) || ''
+
+  const handleSignOut = () => {
+    auth.reset()
+    navigate({ to: '/sign-in' })
+  }
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => {
-      localStorage.setItem(MENU_PHOTO_KEY, reader.result as string)
-      window.dispatchEvent(new Event('menu-photo-changed'))
-    }
+    reader.onload = () => localStorage.setItem(MENU_PHOTO_KEY, reader.result as string)
     reader.readAsDataURL(file)
   }
 
@@ -67,7 +67,6 @@ export function ProfileDropdown() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-52' align='start' forceMount>
-          {/* Setting sejajar Order/Flow — 1 spasi indent via pl */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Settings className='mr-2 h-4 w-4' />
@@ -99,7 +98,6 @@ export function ProfileDropdown() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {/* Theme */}
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <Palette className='mr-2 h-4 w-4' />
@@ -151,13 +149,11 @@ export function ProfileDropdown() {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
+          <DropdownMenuItem variant='destructive' onClick={handleSignOut}>
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <SignOutDialog open={!!open} onOpenChange={setOpen} />
     </>
   )
 }
