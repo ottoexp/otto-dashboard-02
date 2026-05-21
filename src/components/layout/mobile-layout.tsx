@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from '@tanstack/react-router'
 import { useAuthStore } from '@/stores/auth-store'
 import {
@@ -9,6 +9,12 @@ import {
 } from 'lucide-react'
 
 const MOBILE_PHOTO_KEY = 'otto_mobile_photo'
+
+function useClock() {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(t) }, [])
+  return now
+}
 
 interface NavItem {
   title: string
@@ -32,6 +38,7 @@ export function MobileLayout({ children }: { children: React.ReactNode }) {
   const { auth } = useAuthStore()
   const [showSetting, setShowSetting] = useState(false)
   const [photo, setPhoto] = useState<string>(() => localStorage.getItem(MOBILE_PHOTO_KEY) || '')
+  const now = useClock()
   const fileRef = useRef<HTMLInputElement>(null)
   const isHome = location.pathname === '/'
 
@@ -105,6 +112,15 @@ export function MobileLayout({ children }: { children: React.ReactNode }) {
             <p className='text-base font-bold leading-tight'>{auth.user?.name || '—'}</p>
             <p className='text-xs text-gray-500 capitalize'>{auth.user?.cabang || ''}</p>
           </div>
+        </div>
+        {/* Clock */}
+        <div className='text-right'>
+          <p className='text-base font-bold leading-tight'>
+            {now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+          </p>
+          <p className='text-xs text-gray-500'>
+            {now.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })}
+          </p>
         </div>
         <button
           onClick={() => { auth.reset(); navigate({ to: '/sign-in' }) }}
