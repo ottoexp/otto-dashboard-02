@@ -1,311 +1,263 @@
 import { createLazyFileRoute } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { api } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth-store'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Plus, Edit, Trash2 } from 'lucide-react'
-import { getAttendance, createAttendance, updateAttendance, deleteAttendance, type Attendance, type CreateAttendancePayload, type UpdateAttendancePayload } from '@/lib/api'
-import { logError } from '@/lib/error-tracking'
+import { Card, CardContent } from '@/components/ui/card'
+import { Camera, MapPin, Loader2, CheckCircle2, Clock } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export const Route = createLazyFileRoute('/_authenticated/controller/attendance')({
   component: AttendancePage,
 })
 
+// --- API helpers ---
+const getToday = async () => { const { data } = await api.get('/attendance/today'); return data.data }
+const checkIn   = async (body: any) => { const { data } = await api.post('/attendance/check-in', body); return data.data }
+const breakStart = async () => { const { data } = await api.post('/attendance/break-start', {}); return data.data }
+const breakEnd   = async () => { const { data } = await api.post('/attendance/break-end', {}); return data.data }
+const checkOut  = async (body: any) => { const { data } = await api.post('/attendance/check-out', body); return data.data }
+
+// --- Clock ---
+function useClock() {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t) }, [])
+  return now
+}
+
+// --- GPS hook ---
+function useGPS() {
+  const [pos, setPos] = useState<{ lat: number; lng: number } | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const capture = () => {
+    setLoading(true)
+    navigator.geolocation.getCurrentPosition(
+      (p) => { setPos({ lat: p.coords.latitude, lng: p.coords.longitude }); setLoading(false) },
+      () => { toast.error('Gagal ambil lokasi'); setLoading(false) },
+      { timeout: 10000 }
+    )
+  }
+
+  return { pos, loading, capture }
+}
+
+// --- Camera hook ---
+function useCamera() {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [active, setActive] = useState(false)
+  const [photo, setPhoto] = useState<string | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+
+  const start = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+      streamRef.current = stream
+      if (videoRef.current) videoRef.current.srcObject = stream
+      setActive(true)
+    } catch { toast.error('Gagal aktifkan kamera') }
+  }
+
+  const capture = () => {
+    const video = videoRef.current
+    if (!video) return
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    canvas.getContext('2d')?.drawImage(video, 0, 0)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.6)
+    setPhoto(dataUrl)
+    streamRef.current?.getTracks().forEach(t => t.stop())
+    setActive(false)
+  }
+
+  const reset = () => { setPhoto(null); setActive(false); streamRef.current?.getTracks().forEach(t => t.stop()) }
+
+  return { videoRef, active, photo, start, capture, reset }
+}
+
+// --- Step button ---
+const STEPS = [
+  { key: 'check_in',   label: 'Absen Masuk',     sub: 'Foto + GPS wajib',       color: 'bg-green-500',  dot: 'bg-green-400' },
+  { key: 'break_start', label: 'Mulai Istirahat', sub: 'Tandai istirahat',       color: 'bg-yellow-500', dot: 'bg-yellow-400' },
+  { key: 'break_end',   label: 'Kembali Kerja',   sub: 'Kembali ke pekerjaan',   color: 'bg-blue-500',   dot: 'bg-blue-400' },
+  { key: 'check_out',  label: 'Absen Pulang',     sub: 'Foto + GPS wajib',       color: 'bg-red-500',    dot: 'bg-red-400' },
+]
+
+function currentStep(record: any): string {
+  if (!record) return 'check_in'
+  if (!record.break_start) return 'break_start'
+  if (!record.break_end) return 'break_end'
+  if (!record.check_out) return 'check_out'
+  return 'done'
+}
+
 function AttendancePage() {
+  const now = useClock()
+  const { auth } = useAuthStore()
   const queryClient = useQueryClient()
-  const [openModal, setOpenModal] = useState(false)
-  const [editingItem, setEditingItem] = useState<Attendance | null>(null)
-  const [formData, setFormData] = useState<CreateAttendancePayload>({
-    employeeId: '',
-    employeeName: '',
-    date: new Date().toISOString().split('T')[0],
-    checkIn: '',
-    checkOut: '',
-    status: 'present',
-    notes: ''
-  })
+  const gps = useGPS()
+  const cam = useCamera()
 
-  const { data: attendance, isLoading } = useQuery({
-    queryKey: ['attendance'],
-    queryFn: getAttendance
-  })
+  const { data: record, isLoading } = useQuery({ queryKey: ['attendance-today'], queryFn: getToday })
 
-  const createMutation = useMutation({
-    mutationFn: createAttendance,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendance'] })
-      setOpenModal(false)
-      resetForm()
+  const step = currentStep(record)
+  const needsPhotoGPS = step === 'check_in' || step === 'check_out'
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (needsPhotoGPS && !cam.photo) { toast.error('Ambil foto dulu'); throw new Error('no photo') }
+      if (needsPhotoGPS && !gps.pos) { toast.error('Ambil lokasi GPS dulu'); throw new Error('no gps') }
+      const body = { lat: gps.pos?.lat, lng: gps.pos?.lng, photo: cam.photo }
+      if (step === 'check_in') return checkIn(body)
+      if (step === 'break_start') return breakStart()
+      if (step === 'break_end') return breakEnd()
+      if (step === 'check_out') return checkOut(body)
     },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/attendance',
-        error: err.message,
-        stack: err.stack,
-        body: formData
-      })
-    }
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdateAttendancePayload }) =>
-      updateAttendance(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendance'] })
-      setOpenModal(false)
-      resetForm()
-      setEditingItem(null)
+      queryClient.invalidateQueries({ queryKey: ['attendance-today'] })
+      cam.reset()
+      gps.pos && toast.success('Berhasil!')
     },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/attendance',
-        error: err.message,
-        stack: err.stack,
-        body: formData
-      })
-    }
+    onError: (e: any) => { if (e.message !== 'no photo' && e.message !== 'no gps') toast.error('Gagal absen') },
   })
 
-  const deleteMutation = useMutation({
-    mutationFn: deleteAttendance,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendance'] })
-    },
-    onError: (err: Error) => {
-      logError({
-        endpoint: '/attendance',
-        error: err.message,
-        stack: err.stack
-      })
-    }
-  })
-
-  const resetForm = () => {
-    setFormData({
-      employeeId: '',
-      employeeName: '',
-      date: new Date().toISOString().split('T')[0],
-      checkIn: '',
-      checkOut: '',
-      status: 'present',
-      notes: ''
-    })
-  }
-
-  const handleEdit = (item: Attendance) => {
-    setEditingItem(item)
-    setFormData({
-      employeeId: item.employeeId || '',
-      employeeName: item.employeeName || '',
-      date: item.date || new Date().toISOString().split('T')[0],
-      checkIn: item.checkIn || '',
-      checkOut: item.checkOut || '',
-      status: item.status || 'present',
-      notes: item.notes || ''
-    })
-    setOpenModal(true)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, payload: formData })
-    } else {
-      createMutation.mutate(formData)
-    }
-  }
+  const day = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 
   return (
-    <>
-      <div className='flex flex-wrap items-end justify-between gap-2 mb-6'>
-        <div>
-          <h2 className='text-2xl font-bold tracking-tight'>Daftar Kehadiran</h2>
-          <p className='text-muted-foreground'>
-            Kelola data kehadiran karyawan.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Dialog open={openModal} onOpenChange={(open) => {
-            setOpenModal(open)
-            if (!open) {
-              resetForm()
-              setEditingItem(null)
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingItem(null)}>
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah Kehadiran
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingItem ? 'Edit Kehadiran' : 'Tambah Kehadiran Baru'}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="employeeId">ID Karyawan</Label>
-                  <Input
-                    id="employeeId"
-                    value={formData.employeeId}
-                    onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="employeeName">Nama Karyawan</Label>
-                  <Input
-                    id="employeeName"
-                    value={formData.employeeName}
-                    onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date">Tanggal</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="checkIn">Check In</Label>
-                    <Input
-                      id="checkIn"
-                      type="time"
-                      value={formData.checkIn}
-                      onChange={(e) => setFormData({ ...formData, checkIn: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="checkOut">Check Out</Label>
-                    <Input
-                      id="checkOut"
-                      type="time"
-                      value={formData.checkOut}
-                      onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="present">Hadir</SelectItem>
-                      <SelectItem value="absent">Tidak Hadir</SelectItem>
-                      <SelectItem value="late">Terlambat</SelectItem>
-                      <SelectItem value="half-day">Setengah Hari</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Catatan</Label>
-                  <Textarea
-                    id="notes"
-                    value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="secondary" onClick={() => {
-                    setOpenModal(false)
-                    resetForm()
-                    setEditingItem(null)
-                  }}>
-                    Batal
-                  </Button>
-                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
-                    {(createMutation.isPending || updateMutation.isPending) ? 'Menyimpan...' : 'Simpan'}
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+    <div className='max-w-md mx-auto space-y-4'>
+      {/* Header */}
+      <div className='rounded-2xl bg-slate-800 text-white p-4'>
+        <p className='text-xs text-slate-400 uppercase tracking-widest'>Selamat Datang</p>
+        <p className='text-2xl font-bold leading-tight'>{auth.user?.name || '—'}</p>
+        <p className='text-sm text-slate-400 capitalize'>{auth.user?.role || ''}</p>
+        <div className='flex items-end justify-between mt-2'>
+          <p className='text-sm text-slate-300'>{day}</p>
+          <p className='text-3xl font-mono font-bold'>{time}</p>
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID Karyawan</TableHead>
-            <TableHead>Nama Karyawan</TableHead>
-            <TableHead>Tanggal</TableHead>
-            <TableHead>Check In</TableHead>
-            <TableHead>Check Out</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="w-24">Aksi</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                Memuat data...
-              </TableCell>
-            </TableRow>
-          ) : !attendance || attendance.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                Belum ada data kehadiran
-              </TableCell>
-            </TableRow>
-          ) : (
-            attendance.map((item: Attendance) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.employeeId}</TableCell>
-                <TableCell>{item.employeeName}</TableCell>
-                <TableCell>{item.date}</TableCell>
-                <TableCell>{item.checkIn}</TableCell>
-                <TableCell>{item.checkOut}</TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    item.status === 'present' ? 'bg-green-100 text-green-800' :
-                    item.status === 'absent' ? 'bg-red-100 text-red-800' :
-                    item.status === 'late' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-blue-100 text-blue-800'
-                  }`}>
-                    {item.status}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8"
-                      onClick={() => handleEdit(item)}
+      {isLoading ? (
+        <div className='flex justify-center py-8'><Loader2 className='animate-spin text-muted-foreground' /></div>
+      ) : (
+        <>
+          {/* Status */}
+          <Card>
+            <CardContent className='p-4'>
+              <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2'>Status Absensi</p>
+              <div className='flex items-center gap-2'>
+                {step === 'done' ? <CheckCircle2 className='text-green-500' size={22} /> : <Clock className='text-yellow-500' size={22} />}
+                <span className='text-base font-medium'>
+                  {step === 'check_in' && 'Belum absen masuk'}
+                  {step === 'break_start' && 'Sudah masuk — belum istirahat'}
+                  {step === 'break_end' && 'Istirahat — belum kembali'}
+                  {step === 'check_out' && 'Sudah kembali — belum pulang'}
+                  {step === 'done' && 'Absensi hari ini selesai'}
+                </span>
+              </div>
+              {record?.check_in && (
+                <div className='mt-2 text-xs text-muted-foreground flex flex-wrap gap-x-4 gap-y-1'>
+                  {record.check_in && <span>Masuk: {record.check_in}</span>}
+                  {record.break_start && <span>Istirahat: {record.break_start}</span>}
+                  {record.break_end && <span>Kembali: {record.break_end}</span>}
+                  {record.check_out && <span>Pulang: {record.check_out}</span>}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {step !== 'done' && (
+            <>
+              {/* Camera — only for check_in and check_out */}
+              {needsPhotoGPS && (
+                <Card>
+                  <CardContent className='p-4'>
+                    <div className='flex items-center justify-between mb-2'>
+                      <div className='flex items-center gap-2'>
+                        <Camera size={18} />
+                        <span className='font-medium'>Foto Absensi</span>
+                      </div>
+                      <Badge variant={cam.photo ? 'default' : 'secondary'} className='text-xs'>
+                        {cam.photo ? 'Sudah diambil' : 'Belum diambil'}
+                      </Badge>
+                    </div>
+                    {cam.photo ? (
+                      <div className='relative'>
+                        <img src={cam.photo} className='w-full rounded-lg max-h-48 object-cover' alt='foto' />
+                        <Button size='sm' variant='outline' className='mt-2 w-full' onClick={cam.reset}>Ambil Ulang</Button>
+                      </div>
+                    ) : cam.active ? (
+                      <div>
+                        <video ref={cam.videoRef} autoPlay playsInline className='w-full rounded-lg max-h-48 object-cover' />
+                        <Button className='w-full mt-2' onClick={cam.capture}><Camera size={16} className='mr-2' />Ambil Foto</Button>
+                      </div>
+                    ) : (
+                      <Button variant='outline' className='w-full' onClick={cam.start}><Camera size={16} className='mr-2' />Aktifkan Kamera</Button>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* GPS — only for check_in and check_out */}
+              {needsPhotoGPS && (
+                <Card>
+                  <CardContent className='p-4'>
+                    <div className='flex items-center justify-between mb-2'>
+                      <div className='flex items-center gap-2'>
+                        <MapPin size={18} />
+                        <span className='font-medium'>Lokasi GPS</span>
+                      </div>
+                      <Badge variant={gps.pos ? 'default' : 'secondary'} className='text-xs'>
+                        {gps.pos ? 'Sudah diambil' : 'Belum aktif'}
+                      </Badge>
+                    </div>
+                    {gps.pos ? (
+                      <p className='text-xs text-muted-foreground'>{gps.pos.lat.toFixed(6)}, {gps.pos.lng.toFixed(6)}</p>
+                    ) : (
+                      <Button className='w-full' onClick={gps.capture} disabled={gps.loading}>
+                        {gps.loading ? <Loader2 size={16} className='animate-spin mr-2' /> : <MapPin size={16} className='mr-2' />}
+                        {gps.loading ? 'Mengambil...' : 'Ambil Lokasi GPS'}
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Step buttons */}
+              <div className='space-y-2'>
+                {STEPS.map((s, i) => {
+                  const isActive = s.key === step
+                  const isDone = STEPS.indexOf(STEPS.find(x => x.key === step)!) > i || step === 'done'
+                  return (
+                    <div
+                      key={s.key}
+                      onClick={() => isActive && mutation.mutate()}
+                      className={cn(
+                        'flex items-center gap-3 rounded-xl border p-4 transition-all',
+                        isActive && 'border-primary cursor-pointer hover:shadow-md',
+                        isDone && 'opacity-50 bg-muted border-transparent',
+                        !isActive && !isDone && 'opacity-30 border-transparent'
+                      )}
                     >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-red-500"
-                      onClick={() => deleteMutation.mutate(item.id)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+                      <div className={cn('h-4 w-4 rounded-full shrink-0', isDone ? 'bg-green-400' : isActive ? s.dot : 'bg-gray-300')} />
+                      <div className='flex-1'>
+                        <p className={cn('font-semibold text-sm', isActive && 'text-primary')}>{s.label}</p>
+                        <p className='text-xs text-muted-foreground'>{s.sub}</p>
+                      </div>
+                      {isActive && mutation.isPending && <Loader2 size={16} className='animate-spin text-primary' />}
+                      {isDone && <CheckCircle2 size={16} className='text-green-500' />}
+                    </div>
+                  )
+                })}
+              </div>
+            </>
           )}
-        </TableBody>
-      </Table>
-    </>
+        </>
+      )}
+    </div>
   )
 }
