@@ -72,9 +72,9 @@ export function ProfileDropdown() {
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className='w-48'>
               <DropdownMenuItem asChild>
-                <Link to='/operational/people'>
-                  <Users className='mr-2 h-4 w-4' />
-                  Personnel
+                <Link to='/operational/customer'>
+                  <User className='mr-2 h-4 w-4' />
+                  Customer
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
@@ -84,9 +84,9 @@ export function ProfileDropdown() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to='/operational/customer'>
-                  <User className='mr-2 h-4 w-4' />
-                  Customer
+                <Link to='/operational/people'>
+                  <Users className='mr-2 h-4 w-4' />
+                  Team
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
