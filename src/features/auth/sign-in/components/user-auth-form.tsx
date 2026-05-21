@@ -18,18 +18,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 const CABANG_OPTIONS = [
-  { value: 'pusat', label: 'Pusat' },
-  { value: 'kapuk', label: 'Kapuk' },
-  { value: 'cakung', label: 'Cakung' },
+  { value: 'pusat',    label: 'Pusat' },
+  { value: 'kapuk',    label: 'Kapuk' },
+  { value: 'cakung',   label: 'Cakung' },
   { value: 'cikarang', label: 'Cikarang' },
 ]
 
@@ -43,11 +36,11 @@ const formSchema = z.object({
   password: z.string().min(1, 'Masukkan password').min(7, 'Password minimal 7 karakter'),
 })
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+interface UserAuthFormProps {
   redirectTo?: string
 }
 
-export function UserAuthForm({ className, redirectTo }: UserAuthFormProps) {
+export function UserAuthForm({ redirectTo }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { auth } = useAuthStore()
@@ -80,103 +73,112 @@ export function UserAuthForm({ className, redirectTo }: UserAuthFormProps) {
   }
 
   return (
-    <div className={cn('grid gap-4', className)}>
-      {/* Layout Picker */}
-      <div>
-        <p className='text-sm font-medium mb-2'>Tampilan</p>
-        <div className='grid grid-cols-2 gap-2'>
-          <button
-            type='button'
-            onClick={() => auth.setLayout('desktop')}
-            className={cn(
-              'flex items-center gap-2 rounded-lg border-2 px-3 py-2 transition-all',
-              auth.layout === 'desktop'
-                ? 'border-primary bg-primary/5 text-primary'
-                : 'border-border text-muted-foreground hover:border-primary/50'
-            )}
-          >
-            <Monitor size={18} />
-            <span className='text-sm font-medium'>Desktop</span>
-          </button>
-          <button
-            type='button'
-            onClick={() => auth.setLayout('mobile')}
-            className={cn(
-              'flex items-center gap-2 rounded-lg border-2 px-3 py-2 transition-all',
-              auth.layout === 'mobile'
-                ? 'border-primary bg-primary/5 text-primary'
-                : 'border-border text-muted-foreground hover:border-primary/50'
-            )}
-          >
-            <Smartphone size={18} />
-            <span className='text-sm font-medium'>Mobile</span>
-          </button>
-        </div>
-      </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
 
-      {/* Login Form */}
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='grid gap-3'>
-          <FormField
-            control={form.control}
-            name='cabang'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cabang</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder='Pilih cabang...' />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {CABANG_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='email'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder='name@example.com' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='password'
-            render={({ field }) => (
-              <FormItem className='relative'>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <PasswordInput placeholder='********' {...field} />
-                </FormControl>
-                <FormMessage />
-                <Link
-                  to='/forgot-password'
-                  className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
-                >
-                  Forgot password?
-                </Link>
-              </FormItem>
-            )}
-          />
-          <Button className='mt-2' disabled={isLoading}>
-            {isLoading ? <Loader2 className='animate-spin' /> : <LogIn />}
-            Sign in
-          </Button>
-        </form>
-      </Form>
-    </div>
+        {/* Tampilan — 1 line */}
+        <div className='flex items-center gap-2'>
+          <span className='text-sm font-medium w-20 shrink-0'>Tampilan</span>
+          <div className='flex gap-2'>
+            <button
+              type='button'
+              onClick={() => auth.setLayout('desktop')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-all',
+                auth.layout === 'desktop'
+                  ? 'border-primary bg-primary/5 text-primary font-medium'
+                  : 'border-border text-muted-foreground hover:border-primary/50'
+              )}
+            >
+              <Monitor size={15} /> Desktop
+            </button>
+            <button
+              type='button'
+              onClick={() => auth.setLayout('mobile')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm transition-all',
+                auth.layout === 'mobile'
+                  ? 'border-primary bg-primary/5 text-primary font-medium'
+                  : 'border-border text-muted-foreground hover:border-primary/50'
+              )}
+            >
+              <Smartphone size={15} /> Mobile
+            </button>
+          </div>
+        </div>
+
+        {/* Cabang — 1 line, button group */}
+        <FormField
+          control={form.control}
+          name='cabang'
+          render={({ field }) => (
+            <FormItem>
+              <div className='flex items-center gap-2'>
+                <FormLabel className='w-20 shrink-0 m-0'>Cabang</FormLabel>
+                <div className='flex flex-wrap gap-2'>
+                  {CABANG_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type='button'
+                      onClick={() => field.onChange(opt.value)}
+                      className={cn(
+                        'rounded-lg border px-3 py-1.5 text-sm transition-all',
+                        field.value === opt.value
+                          ? 'border-primary bg-primary/5 text-primary font-medium'
+                          : 'border-border text-muted-foreground hover:border-primary/50'
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <FormMessage className='ml-20' />
+            </FormItem>
+          )}
+        />
+
+        {/* Email */}
+        <FormField
+          control={form.control}
+          name='email'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder='name@example.com' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Password */}
+        <FormField
+          control={form.control}
+          name='password'
+          render={({ field }) => (
+            <FormItem className='relative'>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <PasswordInput placeholder='••••••••' {...field} />
+              </FormControl>
+              <FormMessage />
+              <Link
+                to='/forgot-password'
+                className='absolute end-0 -top-0.5 text-sm font-medium text-muted-foreground hover:opacity-75'
+              >
+                Lupa password?
+              </Link>
+            </FormItem>
+          )}
+        />
+
+        <Button className='w-full' disabled={isLoading}>
+          {isLoading ? <Loader2 className='animate-spin' /> : <LogIn size={16} />}
+          Masuk
+        </Button>
+      </form>
+    </Form>
   )
 }
