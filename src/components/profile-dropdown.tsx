@@ -58,16 +58,18 @@ export function ProfileDropdown() {
               </Avatar>
             )}
             <div className='text-left leading-tight'>
-              <p className='text-sm font-bold'>Sofa</p>
-              <p className='text-xs text-muted-foreground'>{user?.name || ''}</p>
+              <p className='text-sm font-semibold'>{user?.name || 'Menu'}</p>
+              {user?.cabang && (
+                <p className='text-xs text-muted-foreground capitalize'>{user.cabang}</p>
+              )}
             </div>
             <ChevronDown size={14} className='text-muted-foreground ml-0.5' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-52' align='start' forceMount>
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className='pl-2'>
-              <Settings className='mr-2 h-4 w-4' />
+            <DropdownMenuSubTrigger className='gap-2'>
+              <Settings className='h-4 w-4' />
               Setting
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className='w-48'>
