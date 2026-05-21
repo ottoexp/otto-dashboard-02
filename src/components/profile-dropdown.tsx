@@ -17,7 +17,7 @@ import {
   Check, Moon, Sun, Monitor, Palette,
   Users, Package2, User, Settings,
   ClipboardList, GitBranch, CalendarCheck,
-  ImagePlus, ChevronDown,
+  ImagePlus, ChevronDown, BarChart2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
@@ -97,6 +97,34 @@ export function ProfileDropdown() {
                   Admin
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {/* Rekap submenu */}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <BarChart2 className='mr-2 h-4 w-4' />
+                  Rekap
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className='w-44'>
+                  <DropdownMenuItem asChild>
+                    <Link to='/report/attendance'>
+                      <CalendarCheck className='mr-2 h-4 w-4' />
+                      Attendance
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to='/report/order'>
+                      <ClipboardList className='mr-2 h-4 w-4' />
+                      Order
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to='/report/inventory'>
+                      <Package2 className='mr-2 h-4 w-4' />
+                      Inventory
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>

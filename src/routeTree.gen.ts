@@ -62,6 +62,15 @@ const AuthenticatedServicesLazyRouteImport = createFileRoute(
 const AuthenticatedCustomersLazyRouteImport = createFileRoute(
   '/_authenticated/customers',
 )()
+const AuthenticatedReportOrderLazyRouteImport = createFileRoute(
+  '/_authenticated/report/order',
+)()
+const AuthenticatedReportInventoryLazyRouteImport = createFileRoute(
+  '/_authenticated/report/inventory',
+)()
+const AuthenticatedReportAttendanceLazyRouteImport = createFileRoute(
+  '/_authenticated/report/attendance',
+)()
 const AuthenticatedOperationalSpkLazyRouteImport = createFileRoute(
   '/_authenticated/operational/spk',
 )()
@@ -256,6 +265,34 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReportOrderLazyRoute =
+  AuthenticatedReportOrderLazyRouteImport.update({
+    id: '/report/order',
+    path: '/report/order',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/report/order.lazy').then((d) => d.Route),
+  )
+const AuthenticatedReportInventoryLazyRoute =
+  AuthenticatedReportInventoryLazyRouteImport.update({
+    id: '/report/inventory',
+    path: '/report/inventory',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/report/inventory.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+const AuthenticatedReportAttendanceLazyRoute =
+  AuthenticatedReportAttendanceLazyRouteImport.update({
+    id: '/report/attendance',
+    path: '/report/attendance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/report/attendance.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 const AuthenticatedOperationalSpkLazyRoute =
   AuthenticatedOperationalSpkLazyRouteImport.update({
     id: '/operational/spk',
@@ -508,6 +545,9 @@ export interface FileRoutesByFullPath {
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
+  '/report/attendance': typeof AuthenticatedReportAttendanceLazyRoute
+  '/report/inventory': typeof AuthenticatedReportInventoryLazyRoute
+  '/report/order': typeof AuthenticatedReportOrderLazyRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/apps/': typeof AuthenticatedAppsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
@@ -563,6 +603,9 @@ export interface FileRoutesByTo {
   '/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
+  '/report/attendance': typeof AuthenticatedReportAttendanceLazyRoute
+  '/report/inventory': typeof AuthenticatedReportInventoryLazyRoute
+  '/report/order': typeof AuthenticatedReportOrderLazyRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/apps': typeof AuthenticatedAppsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
@@ -622,6 +665,9 @@ export interface FileRoutesById {
   '/_authenticated/operational/scheduling': typeof AuthenticatedOperationalSchedulingLazyRoute
   '/_authenticated/operational/service': typeof AuthenticatedOperationalServiceLazyRoute
   '/_authenticated/operational/spk': typeof AuthenticatedOperationalSpkLazyRoute
+  '/_authenticated/report/attendance': typeof AuthenticatedReportAttendanceLazyRoute
+  '/_authenticated/report/inventory': typeof AuthenticatedReportInventoryLazyRoute
+  '/_authenticated/report/order': typeof AuthenticatedReportOrderLazyRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
@@ -679,6 +725,9 @@ export interface FileRouteTypes {
     | '/operational/scheduling'
     | '/operational/service'
     | '/operational/spk'
+    | '/report/attendance'
+    | '/report/inventory'
+    | '/report/order'
     | '/admin/'
     | '/apps/'
     | '/chats/'
@@ -734,6 +783,9 @@ export interface FileRouteTypes {
     | '/operational/scheduling'
     | '/operational/service'
     | '/operational/spk'
+    | '/report/attendance'
+    | '/report/inventory'
+    | '/report/order'
     | '/admin'
     | '/apps'
     | '/chats'
@@ -792,6 +844,9 @@ export interface FileRouteTypes {
     | '/_authenticated/operational/scheduling'
     | '/_authenticated/operational/service'
     | '/_authenticated/operational/spk'
+    | '/_authenticated/report/attendance'
+    | '/_authenticated/report/inventory'
+    | '/_authenticated/report/order'
     | '/_authenticated/admin/'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
@@ -1021,6 +1076,27 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/report/order': {
+      id: '/_authenticated/report/order'
+      path: '/report/order'
+      fullPath: '/report/order'
+      preLoaderRoute: typeof AuthenticatedReportOrderLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/report/inventory': {
+      id: '/_authenticated/report/inventory'
+      path: '/report/inventory'
+      fullPath: '/report/inventory'
+      preLoaderRoute: typeof AuthenticatedReportInventoryLazyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/report/attendance': {
+      id: '/_authenticated/report/attendance'
+      path: '/report/attendance'
+      fullPath: '/report/attendance'
+      preLoaderRoute: typeof AuthenticatedReportAttendanceLazyRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/operational/spk': {
@@ -1264,6 +1340,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOperationalSchedulingLazyRoute: typeof AuthenticatedOperationalSchedulingLazyRoute
   AuthenticatedOperationalServiceLazyRoute: typeof AuthenticatedOperationalServiceLazyRoute
   AuthenticatedOperationalSpkLazyRoute: typeof AuthenticatedOperationalSpkLazyRoute
+  AuthenticatedReportAttendanceLazyRoute: typeof AuthenticatedReportAttendanceLazyRoute
+  AuthenticatedReportInventoryLazyRoute: typeof AuthenticatedReportInventoryLazyRoute
+  AuthenticatedReportOrderLazyRoute: typeof AuthenticatedReportOrderLazyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
@@ -1312,6 +1391,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOperationalServiceLazyRoute:
     AuthenticatedOperationalServiceLazyRoute,
   AuthenticatedOperationalSpkLazyRoute: AuthenticatedOperationalSpkLazyRoute,
+  AuthenticatedReportAttendanceLazyRoute:
+    AuthenticatedReportAttendanceLazyRoute,
+  AuthenticatedReportInventoryLazyRoute: AuthenticatedReportInventoryLazyRoute,
+  AuthenticatedReportOrderLazyRoute: AuthenticatedReportOrderLazyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
