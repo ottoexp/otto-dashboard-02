@@ -59,7 +59,7 @@ export function MobileLayout({ children }: { children: React.ReactNode }) {
       <div className='min-h-screen bg-gray-50 flex flex-col'>
         <div className='bg-white border-b px-4 py-3 sticky top-0 z-10 flex items-center gap-3'>
           <button
-            onClick={() => navigate({ to: '/' })}
+            onClick={() => history.back()}
             className='text-blue-500 font-semibold text-base'
           >
             ← Menu
